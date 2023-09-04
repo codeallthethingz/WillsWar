@@ -4,6 +4,8 @@
 // TODO replace " *; *" with ";"
 // TODO replace "//" with "Rem"
 // TODO intelligently replace "NAMES" with "NAME$"
+// TODO replace " [" with "["
+// TODO replace " = " with "="
 
 Dim PLAERS(9,1), NAMES(9), WEAPON(13,9,0), WEAPONTYPE(13), CREDITS(9) 
 Dim U# (5), NRG (9), COLOUR(9), WEAPONNAMES(13), FUNKY(5, 1), HIT(5), V2#(5) 
@@ -504,3 +506,271 @@ Procedure GENERATE
 End Proc 
 
 /// page 9
+
+Procedure PLACE_SPRITES 
+    For T=1 TO PLAERS 
+        PLAERS (T, 0)=Rnd(599)+20 
+        PLAERS (T, 1)=0 
+    Next 
+    For T1=0 To 198 
+        For T=1 TO PLAERS 
+            If Point (PLAERS (T, 0), PLAERS (T, 1))=0 or Point (PLAERS (T, 0), PLAERS (T, 1))=15 
+                PLAERS (T, 1)=PLAERS (T, 1)+1 
+            End If 
+        Next 
+    Next 
+    Ink 3 
+    For T=1 TO PLAERS 
+        Ink T 
+        Bar PLAERS (T, 0)-10, PLAERS (T, 1)-5 To PLAERS (T, 0)+10, PLAERS (T,1) 
+    Next 
+End Proc 
+
+Procedure TAKE_COORDINATE 
+    WIND=Rnd(200)-100 
+    If COMPUTER (P)=1 Then Goto FIN5 
+    Paper 8 : Pen 2 
+    Ink 2: Bar 0,0 To 638,20 
+    nk 10: Bar 1,1 To 638,20 
+    Ink 8: Bar 1,1 To 637,19: Rem Main box 
+    Ink 2: Bar 250,11 To 270,17 
+    Ink 0: Bar 251,12 To 270,17 
+    Ink P : Bar 251,12 To 269,16: Rem player colour box 
+    Ink 2,8,8 
+    POWER#=LAST (P,1) 
+    POWER2#=LAST (P, 2) 
+    WEAPON=LAST (P,3) 
+    If WEAPON (WEAPON, P, 0)=0 Then WEAPON=1 
+    Ink 2 : Text 220,8, "Player " 
+    Ink 2: Text 20,8, "Horizontal power    = " 
+    Ink 2: Text 20,17, "Vertical power     = "
+    Ink 6: Text 330,8, "Weapon" 
+    Ink 5 : Text 500, 8, "Energy" 
+    Ink 0 : Text 580,8, "Wind" 
+    If Sgn(WIND)=-1 Then Text 580, 17, "<-" 
+    If Sgn(WIND)=1 Then Text 580,17, "->" 
+    Text 597, 17, Right$ (Str$ (Abs (WIND)), 2) 
+    Do 
+        If Key Shift and Key State (76) Then POWER2#=POWER2#+2 : TURRET : Goto SKIP 
+        If Key Shift and Key State (77) Then POWER2#=POWER2#-2 : TURRET : Goto SKIP 
+        If Key Shift and Key State (78) Then POWER#=POWER#+2 : TURRET : Goto SKIP 
+        If Key Shift and Key State (79) Then POWER#=POWER#-2 : TURRET : Goto SKIP 
+        If Key State (69) Then P=1 : Exit 
+        If Key State (76) Then POWER2#=POWER2#+25 : TURRET 
+        If Key State (77) Then POWER2#=POWER2#-25 : TURRET 
+        If Key State (78) Then POWER#=POWER#+25 : TURRET 
+        If Key State (79) Then POWER#=POWER#-25 : TURRET 
+        SKIP: 
+        If Key State (66) 
+            For T-WEAPON+1 To 14 
+                If T=14 
+                    T=1 
+                End If 
+                If WEAPON (T, P, 0)>0 
+                    WEAPON=T 
+                    Exit 
+                End If 
+            Next 
+        End If 
+        If WEAPON=14 Then WEAPON=1 
+        If POWER2#>1000 Then POWER2#=1000 
+        If POWER2# <0 Then POWER2#=0 
+        If POWER#>1000 Then POWER#=1000 
+        If POWER#<-1000 Then POWER#=-1000 
+        If Key State (68) Then Exit 
+        Ink 15 
+        Text 180,17, Str$ (POWER2#)+" "
+        Text 180,8, Str$ (POWER#)+" "
+        Ink 2 
+        Text 280,8, Left$ (NAME$ (P), 4) 
+        Ink 6 
+        Text 330,17, WEAPONNAME$ (WEAPON) 
+        Text 450, 17, Str$ (WEAPON (WEAPON, P, 0))+"    "
+        Ink 5 
+        Text 500, 17, Str$ (NRG (P)) 
+        Wait Vbl 
+        Wait Vbl 
+    Loop 
+    Wait 5 
+    FIN5: 
+    If COMPUTER (P)=1 Then COMPUTER 
+    Clear Key 
+    LAST (P, 1) = POWER# 
+    LAST (P,2)=POWER2# 
+    LAST (P, 3)=WEAPON 
+    U#=POWER#/7 
+    U2#=-POWER2#/7 
+    A=10 
+    Ink 15: Bar 0,0 To 640,20 
+End Proc 
+
+Procedure TURRET 
+    POWER=POWER# 
+    POWER2-POWER2# 
+    POS1=PLAERS (P,0) 
+    POS2=PLAERS (P,1) 
+    Ink 15 : Polyline POS1, POS2-7 To POS1+TURRET/70, (POS2-TURRET2/98)-7 
+    Ink 14 : Polyline POS1, POS2-7 To POS1+POWER/70, (POS2-POWER2/98)-7 
+    TURRET=POWER 
+    TURRET2=POWER2 
+End Proc 
+
+Pedure _FIRE WEAPON_TYPE 
+    Sam Loop Off 
+    // Sam Play 3 
+    For T=1 To 2 
+        If WEAPON=T Then Proc MISSILE [WEAPON] 
+    Next 
+    For T=3 To 5 
+        If WEAPON=T Then Proc ROLLER[WEAPON] 
+    Next 
+    For T=6 To 7 
+        If WEAPON=T Then Proc NUKE [WEAPON] 
+    Next 
+    If WEAPON=8 Then Proc FUNKY BOMB 
+    For T-9 To 10 
+        If WEAPON=T 
+            Wait 8
+            // Sam Play 2
+            Wait 8
+            // Sam Play 2
+            Wait 8 
+            // Sam Play 2
+            Wait 8
+            // Sam Play 2 
+            Proc MIRV [WEAPON] 
+        End If 
+    Next 
+    If WEAPON=11 Then Proc DIGGER 
+    If WEAPON=12 Then Proc EARTH_MOVER 
+    If WEAPON=13 Then Proc LAZY_BOY 
+End Proc 
+
+Procedure _FIRE_WEAPON 
+    WIND#=WIND/15 
+    V2#=0: T#=0 : J=0 
+    HORIZONTAL=PLAERS (P,0) 
+    VERTICAL=PLAERS (P, 1) 
+    HEIGHT=7 
+    Do 
+        If Key State (69) Then Exit 
+        Ink 15: Plot X,Y: Plot X+1,Y: Plot X-1,Y: Plot X,Y+1: Plot X, Y-1 
+        WINDT#=WINDT#+0.055 
+        XT#=XT#+0.055 
+        YT#=YT#+0.055 
+        X=(((U#*XT#)+(POWER#/70))+(WIND#*WINDT#*WINDT#))+HORIZONTAL 
+        V2#=U2#+A*YT# : Y=((((U2#+V2#)/2+YT#) -HEIGHT)-(POWER2#/98))+VERTICAL 
+        Ink 14: Plot X,Y: Plot X+1,Y: Plot X-1,Y: Plot X, Y+1: Plot X, Y-1 
+        Wait Vbl 
+        If Point (X+1, Y+1)=11 Then HIT=1 : Exit 
+        For T=1 To PLAERS 
+            If Point (X+1, Y+1)=T Then J=1 : HIT=1 : Exit 
+        Next 
+        If Y>200 Then U2#=-(V2#*0.7): YT#=0 : VERTICAL=200: POWER2#=0 : HEIGHT=0 
+        If Y<0 Then U2#=-(V2#*0.7): YT#=0: VERTICAL=0 : POWER2#=0 : HEIGHT=0 
+        If X>640 Then U#=-(Abs (U#+WIND#*WINDT#)) : XT#=0: HORIZONTAL=640 POWER# =0: WINDT#=0 
+        If X<0 Then U#= (Abs (U#+WIND# *WINDT#)) : XT#=0 : HORIZONTAL=1: POWER#=0 : WINDT#=0 
+        If J=1 Then Exit 
+    Loop 
+    If COMPUTER (P)=1 Then COMHITX=X 
+    Ink 15 
+    Plot X,Y: Plot X+1,Y: Plot X-1,Y: Plot X, Y+1: Plot X, Y-1 
+End Proc 
+
+Procedure _CHECK_DEATH 
+    For T=1 To PLAERS 
+        DEAD=0 
+        For X=PLAERS (T, 0)-10 TO PLAERS (T,0)+10 
+            For Y=PLAERS (T, 1)-5 To PLAERS (T, 1) 
+                If Point (X, Y) <>T Then DEAD=DEAD+1 
+            Next 
+        Next 
+        DEAD DEAD*12 
+        NRG (T)=NRG (T)-DEAD 
+        If NRG (T) <0 Then DEATH(T)=1 
+        If DEAD>0 Then CREDITS (P) =CREDITS (P)+1000 
+    Next 
+    DEAD=0 
+    For T=1 To PLAERS 
+        If DEATH(T)=1 
+            DEAD=DEAD+1 
+            Ink 15 
+            Bar PLAERS (T, 0)-10, PLAERS (T, 1)-5 To PLAERS (T, 0)+10, PLAERS (T, 1) 
+        End If 
+    Next 
+    If DEAD=PLAERS-1 Then ALLDEAD=1 
+    If DEAD=PLAERS Then ALLDEAD=1 
+    For T=1 To PLAERS 
+        Ink T 
+        If DEATH(T)=0 
+            Bar PLAERS (T, 0)-10, PLAERS (T, 1)-5 To PLAERS (T, 0)+10, PLAERS (T, 1) 
+        End If 
+    Next 
+    If ALLDEAD=1 
+        For T=0 To 500 
+            Rainbow 1,T,, 
+        Next 
+    End If 
+End Proc 
+
+Procedure FALL 
+    DEAD=0 
+    For T=1 To PLAERS 
+        For B=0 To 199 
+            If DEATH(T) = 1 Then Exit 
+            If Point (PLAERS (T, 0), PLAERS (T, 1)+1)=15 
+                Ink 15 Bar PLAERS (T, 0)-10, PLAERS (T, 1)-5 To PLAERS (T, 0)+10, PLAERS (T, 1)
+                PLAERS (T, 1) = PLAERS (T, 1)+1 
+                DEAD=DEAD+1 
+                Ink T : Bar PLAERS (T, 0)-10, PLAERS (T, 1)-5 To PLAERS (T, 0)+10, PLAERS (T, 1)
+            End If 
+        Next 
+        NRG=(T) NRG (T)-(DEAD*5) 
+        If NRG (T) <0 Then DEATH(T)=1 
+    Next 
+    DEAD=0 
+    For T=1 To PLAERS 
+        If DEATH(T)=1 Then DEAD=DEAD+1 
+    Next 
+    If DEAD=PLAERS-1 Then ALLDEAD=1 
+End Proc 
+
+Procedure COMPUTER 
+    For B-1 To PLAERS 
+        If B<>P 
+            If DEATH (B) <>1 
+                TARGET=B 
+            End If 
+        End If 
+    Next 
+    WEAPON=1 
+    If PLAERS (TARGET, 0)>PLAERS (P,0) 
+        G=PLAERS (TARGET, 0)-PLAERS (P,0) 
+        G2=PLAERS (TARGET, 1)-PLAERS (P, 1) 
+        POWER#=G 
+        G2=G2*-1 
+        If Sgn (G2)=-1 
+            G2=G2/1.6 
+        End If 
+        If Sgn (G2)=1 
+            G2=G2*1.6 
+        End If 
+        POWER2#=G2+220 
+    End If 
+    If PLAERS (TARGET, 0) <PLAERS (P, 0) 
+        G=PLAERS (P, 0)-PLAERS (TARGET, 0)
+        G2=PLAERS (TARGET, 1)-PLAERS (P, 1) 
+        POWER#=-G 
+        G2=G2-1 
+        If Sgn (G2)=-1 
+            G2=G2/1.6 
+        End If 
+        If Sgn(G2)=1 
+            G2=G2+1.6 
+        End If 
+        POWER2#=G2+220 
+    End If 
+End Proc 
+
+
+// page 13
