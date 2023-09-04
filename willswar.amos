@@ -1,0 +1,506 @@
+// TODO replace " ()" with "()"
+// TODO replace "Ink 0" with "Ink 0 :"
+// TODO replace "N:M" with "N : M"
+// TODO replace " *; *" with ";"
+// TODO replace "//" with "Rem"
+// TODO intelligently replace "NAMES" with "NAME$"
+
+Dim PLAERS(9,1), NAMES(9), WEAPON(13,9,0), WEAPONTYPE(13), CREDITS(9) 
+Dim U# (5), NRG (9), COLOUR(9), WEAPONNAMES(13), FUNKY(5, 1), HIT(5), V2#(5) 
+Dim V#(5), U2# (5), X(5), Y(5), DEATH(9), LAST(9,3), COMPUTER(9), ROUNDSWON(9) 
+Dim WINDT# (5), WIND#(5), XT# (5), YT# (5), HORIZONTAL(5), VERTICAL (5) 
+
+Global PLAERS, PLAERS(), CREDIT, NAMES (), F, P, ROUNDS, WEAPON(), GHF, VNB, E 
+Global WEAPONTYPE(), _COLOUR(), CREDITS (), WEAPONNAMES(),X(),Y(), NRG () 
+Global WEAPON, U#, U2#,X,Y,A, HIT, FUNKY(), HIT(), V#(), V2#(), U#(), U2#() 
+Global DEATH(), ALLDEAD, LAST(), POWER#, POWER2#, POS1, POS2, TURRET, TURRET2 
+Global COMPUTER(), COMHITX, TARGET, ROUNDSWON(), BUY, GOB, WIND 
+Global WINDT#(), WIND#(),XT#(),YT#(), HORIZONTAL(), VERTICAL()
+
+_INTRO 
+Do 
+    _ASSIGN_VALUES 
+    _START_SCREEN 
+    _PLAYERS_NAMES 
+    For F=1 To ROUNDS 
+        BUY_WEAPONS 
+        ALLDEAD=0 
+        Repeat 
+            For P=1 To PLAERS 
+                If ALLDEAD=1 Then WIPE : Exit 
+                If DEATH(P)=1 Then Goto FIN 
+                TAKE_COORDINATE 
+                _FIRE_WEAPON_TYPE 
+                FIN: 
+                If DEATH(P)=1 Then Goto FIN2 
+                _CHECK_DEATH 
+                FALL 
+                FIN2: 
+                If ALLDEAD=1 Then WIPE : Exit
+            Next 
+        Until ALLDEAD=1 
+        WIN SCREEN 
+    Next 
+    WIN_SCREEN2 
+    FIN4: 
+Loop 
+
+Procedure INTRO 
+    Screen Open 0,640,200, 16, Hires 
+    17 #1 
+    Set Rainbow 1,15,2000,"","", "(10,1,1)" 
+    Rainbow 1,1,0,256 
+    Curs Off: Ink 2,0,0 Paper 0 Ink 2: Pen 2: Cls 0 
+    // Sam Bank 1 
+    Get Rom Fonts 
+    For T=1 To 10 
+        If Left$(Font$(T), 4)="mFas" Then Set Font T 
+    Next 
+    Text 100, 100, "Flamboyent Destruction Ltd. " 
+    Text 250, 125, "Presents" 
+    // Sam Play 3 - A. Schwarzonegger sample 
+    Wait 200 
+    For T=0 To 15
+        // Sam Play 4
+        Wait 7
+    Next 
+    Cls 3: Wait 10: Cls 0: Ink 4 
+    Text 261,75, "Will's" 
+    Text 210,130,"W A R" 
+End Proc 
+
+Procedure _ASSIGN_VALUES 
+    For T=0 To 9 
+        PLAERS (T, 0)=0 
+        PLAERS (T, 1)=1 
+        NAMES (T)="" 
+        NRG (T)=1000 
+        DEATH(T)=0 
+        LAST (T, 1)=0 
+        LAST (T,2)=0 
+        LAST (T,3)=1 
+        COMPUTER(T)=0 
+        ROUNDSWON (T)=0 
+        For T2=0 To 13 
+            WEAPON (T2, T, 0)=99 
+        Next 
+        WEAPON (1, T, 0)=99 
+    Next 
+    DEAD=0 
+    ALLDEAD=0 
+    WEAPONTYPE(1)=1 
+    WEAPONTYPE(2)=10 
+    WEAPONTYPE(3)=100 
+    WEAPONTYPE(4)=150 
+    WEAPONTYPE(5)=400 
+    WEAPONTYPE(6)=700 
+    WEAPONTYPE(7)=2000 
+    WEAPONTYPE(8)=1500 
+    WEAPONTYPE(9)=2000 
+    WEAPONTYPE(10)=7000 
+    WEAPONTYPE(11)=200 
+    WEAPONTYPE(12)=300 
+    WEAPONTYPE(13)=2500 
+    WEAPONNAMES(1)="Baby Missile  "
+    WEAPONNAMES(2)="Missile       "
+    WEAPONNAMES(3)="Baby Roller   " 
+    WEAPONNAMES(4)="Roller        "
+    WEAPONNAMES(5)="Large Roller  "
+    WEAPONNAMES(6)="Baby Nuke     "
+    WEAPONNAMES(7)="Nuke          " 
+    WEAPONNAMES(8)="Funky Bomb    "
+    WEAPONNAMES(9)="MIRV          "
+    WEAPONNAMES(10)="Death's Head  " 
+    WEAPONNAMES(11)="Digger        "
+    WEAPONNAMES(12)="Earth Mover   " 
+    WEAPONNAMES(13)="Lazy Boy      "
+    Colour 14, $FFF 
+End Proc 
+
+Procedure _START_SCREEN 
+    Sam Loop On 
+    // Sam Play 1 
+    Wait 200 
+    Cls 0 
+    GENERATE 
+    ROUNDS=5 
+    PLAERS=2 
+    CREDIT=5000 
+    Ink 10,15,15: Text 210,20,"W   A   R" Set Font 1 
+    H=15 
+    Paper H 
+    Reserve Zone 5 
+    Set Zone 1,5,2 To 50,40 
+    Set Zone 2,24,65 To 31,80 
+    Set Zone 3,24,110 To 31,125 
+    Set Zone 4,24,155 To 31,170 
+    Set Zone 5,5,180 To 65,198 
+    Ink 0,10,10: Bar 0,0 To 70, 200 
+    Ink 2: Bar 0,0 To 69,199 
+    Ink H Bar 1,1 To 69,199 : Rem Main Box 
+    Ink 0 Bar 5,180 To 65,198 
+    Ink 2: Bar 5,180 To 64,197 
+    Ink H Bar 6,181 To 64, 197: Rem Exit Box 
+    Ink 2: Box 5,2 To 60,40: Rem White out line of top box Ink 0 Box 6,3 To 60,40: Rem Black out line of top box Ink H: Box 6,3 To 59,39: Rem Top box 
+    Paint 25,25: Rem fill top main box 
+    Pen 1 Print At (2,2); "S"; : Pen 2: Print "tart" 
+    Ink 1,15,15: Text 21, 192, "Q": Ink 2: Text 30, 192, "uit" 
+    Print At(1, 6); "Players" 
+    Print At(2,7); PLAERS 
+    Print At(1,11); "Rounds" 
+    Print At(2, 12); ROUNDS Rem 
+    Rem ----------------- The Triangles 
+    Ink 8: Polygon 24,70 To 30,70 To 27,65 To 24,70 
+    Polygon 24,75 To 30,75 To 27,80 To 24,75 
+    Ink 0: Polyline 24,71 To 31,71 To 28,65 
+    Polyline 24, 74 To 31, 74 To 28,80 
+    Ink 2: Polyline 27,65 To 24,70 
+    Polyline 27,80 To 24,75 
+    Rem ---------------- The Second Triangles 
+    Ink 8: Polygon 24,115 To 30,115 To 27,110 To 24, 115 
+    Polygon 24,120 To 30,120 To 27,125 To 24, 120 
+    Ink 0: Polyline 24, 116 To 31,116 To 28,110 
+    Polyline 24,119 To 31,119 To 28,125 
+    Ink 2: Polyline 27, 110 To 24,115 
+    Polyline 27,125 To 24, 120 
+    Rem ---------------- The Third Triangles 
+    Ink 8: Polygon 24, 150 To 30,150 To 27,155 To 24, 150 
+    Polygon 24, 165 To 30, 165 To 27,170 To 24, 165 
+    Ink 0: Polyline 24,161 To 31,161 To 28,155
+    Polyline 24,164 To 31,164 To 28,170 
+    Ink 2: Polyline 27,155 To 24,160 
+    Polyline 27,170 To 24,165 
+    Rem -----------------------------
+
+    Do 
+        If Key State (69) Then Sam Stop: Edit 
+        STRTS Inkey$ 
+        If Key State (68) Then STRTS="S" 
+        Wait 3 
+        Ink O 
+        Polyline 24,71 To 31,71 To 28,65: Rem First Trianle
+        Polyline 24, 74 To 31, 74 To 28,80 
+        Polyline 24, 116 To 31,116 To 28,110: Rem Second
+        Polyline 24,119 To 31,119 To 28,125 
+        Polyline 24, 161 To 31, 161 To 28, 155: Rem Third
+        Polyline 24, 164 To 31,164 To 28,170 
+         
+        If Mouse Zone=1 and Mouse Click 
+            Ink 2: Box 5,2 To 60,40 
+            Wait Vbl 
+            Ink 0: Box 5,2 To 60,40 
+            Exit 
+        End If 
+        If Mouse Zone=2 and Mouse Key=1 
+            PLAERS PLAERS-1: Ink 31: Polyline 24, 74 To 31, 74 To 28,80 
+        End If 
+        If Mouse Zone=2 and Mouse Key=2 
+            PLAERS=PLAERS+1: Ink 31: Polyline 24,71 To 31,71 To 28,65 
+        End If 
+        If Mouse Zone=3 and Mouse Key=1 
+            ROUNDS=ROUNDS-5: Ink 31: Polyline 24,119 To 31,119 To 28,125
+        End If 
+        If Mouse Zone=3 and Mouse Key=2 
+            ROUNDS=ROUNDS+5 : Ink 31: Polyline 24, 116 To 31,116 To 28,110 
+        End If 
+        If Mouse Zone=4 and Mouse Key=1 
+            CREDIT=CREDIT-500: Ink 2: Polyline 24,164 To 31, 164 To 28,170 
+        End If 
+        If Mouse Zone=4 and Mouse Key=2 
+            CREDIT=CREDIT+500: Ink 2: Polyline 24, 161 To 31,161 To 28,155 
+        End If 
+        If Mouse Zone=5 and Mouse Key 
+            Ink 2 : Bar 5,180 To 65,198 
+            Ink 0: Bar 5,180 To 64,197 
+            Ink H: Bar 6,181 To 64,197 : Rem Exit Box 
+            Sam Stop: End 
+        End If 
+        If Upper$ (STRT$)="S" 
+            Ink 2: Box 5,2 To 60,40 
+            Wait Vbl 
+            Ink 0: Box 5,2 To 60,40 
+            Exit 
+        End If 
+        If Key State (78) Then PLAERS=PLAERS+1 
+        If Key State (79) Then PLAERS=PLAERS-1 
+        If Key State (76) Then ROUNDS=ROUNDS+5 
+        If Key State (77) Then ROUNDS=ROUNDS-5 
+        If PLAERS=1 Then PLAERS=9 
+        If PLAERS=10 Then PLAERS=2 
+        If ROUNDS=0 Then ROUNDS=1000 
+        If ROUNDS=1005 Then ROUNDS=5 
+        If CREDIT=0 Then CREDIT=10000 
+        If CREDIT=10500 Then CREDIT=500 
+        Print At(1, 17); "Credits" 
+        If ROUNDS>0 and ROUNDS<9 Then Print At(1,12);"  "; ROUNDS;"   " 
+        If ROUNDS>9 and ROUNDS<99 Then Print At(1,12);"  "; ROUNDS;"  " 
+        If ROUNDS>99 and ROUNDS<1001 Then Print At(1, 12);ROUNDS;"  " 
+        If CREDIT>0 and CREDIT<999 Then Print At(1, 18);CREDIT;"   " 
+        If CREDIT>1001 and CREDIT<10001 Then Print At(1, 18); CREDIT;"  " 
+        Print At(2,7); PLAERS 
+    Loop 
+
+    For H=1 To 9 
+        CREDITS (H)=CREDIT 
+    Next 
+End Proc 
+
+
+Procedure _PLAYERS_NAMES 
+    // Sam Stop 
+    Set Font 1 
+    Cls 0 
+    For F=1 To PLAERS 
+        Ink 2: Bar 150,50 To 500,82 
+        Ink 0: Bar 151,51 To 500,82 
+        Ink 15: Bar 151,51 To 499,81: Rem Main Requester 
+        Ink 2: Bar 164,54 To 224,64 
+        Ink 0 Bar 165,55 To 224,64 
+        Ink 15: Bar 165,55 To 223,63: Rem Reauester Name Box 
+        Ink 0: Bar 230,54 To 480,64 
+        Ink 2: Bar 231,55 To 480,64 
+        Ink 15: Bar 231,55 To 479,63: Rem Name Box 
+        Ink 2: Bar 164,68 To 224,78 
+        Ink 0 Bar 165,69 To 224,78 
+        Ink 15 Bar 165,69 To 223,77: Rem Player Box 
+        Print At(22,7); "Name?" 
+        Ink 2,15,15: Text 169, 76, "Player" 
+        Ink 2: Bar 240,68 To 260,78 
+        Ink 0: Bar 241,69 To 260,78 
+        Ink F: Bar 241,69 To 259,77: Rem Colour Box 
+        Ink 2: Bar 420,68 To 440,78 
+        Ink 0: Bar 421,69 To 440,78 
+        Ink 15: Bar 421,69 To 439,77: Rem Computer Box 
+        Ink 2: Text 330,76, "Computer" 
+        Reserve Zone 2 
+        Set Zone 1,420,68 To 440,78 
+        Set Zone 2,230,54 To 480,64 
+        TAKE_DATA[30,7] 
+        Wait 4 
+        Do 
+            If Mouse Zone=1 and Mouse Key=1 
+                Ink 2: Text 426,76, "X" 
+                COMPUTER (F)=1 
+                If NAME$ (F)="" 
+                    NAME$ (F)="Com" +Str$ (F) 
+                    Print At(30,7); NAME$ (F) 
+                End If 
+            End If 
+            If Mouse Zone=1 and Mouse Key=2 
+                Ink 15: Bar 421,69 To 439,77 
+                COMPUTER (F)=0 
+            End If 
+            If Mouse Zone=2 and Mouse Key 
+                Ink 15: Bar 231,55 To 479,63 
+                NAME$ (F)="" 
+                TAKE DATA[30,7] 
+                Wait 10 : Clear Key 
+            End If 
+            If Key State (68) Then Exit 
+        Loop 
+        Clear Key 
+    Next 
+End Proc 
+
+Procedure TAKE DATA[X,Y] 
+    Wait 10: Clear Key 
+    Print At(X, Y); "_" 
+    For T=0 To 25 
+        Repeat 
+            If Key State (68) Then Goto FIN 
+            T$=Inkey$ 
+        Until T$<>"" 
+        If Key State (65) Then T$="" 
+        NAME$ (F)= NAMES (F) +T$ 
+        Print At(X, Y); NAME$ (F); "_" 
+    Next 
+    FIN: 
+    Print At(X, Y); NAMES (F);"  "
+    Clear Key 
+End Proc 
+
+
+Procedure BUY WEAPONS 
+    Cls 15 
+    Ink 2,15,15 
+    Paper 15: Pen 2 
+    For T=1 To PLAERS
+        NRG (T)=1000 
+        X=0 : Y=0 
+        DEATH(T)=0 
+    Next 
+    Reserve Zone 30 
+    Ink 2 : Bar 0,0 To 639,200 
+    Ink 0 : Bar 1,1 To 639,200 
+    Ink 15 : Bar 1,1 To 638,198 : Rem Main Requester
+    Ink 0 : Bar 164,6 To 224,16 
+    Ink 2 : Bar 165,7 To 224, 16 
+    Ink 15 : Bar 165,7 To 223,15: Rem Cash Box 
+    Ink 2 : Bar 8,6 To 124, 16 
+    Ink 0 : Bar 9,7 To 124, 16 
+    Ink 15 : Bar 9,7 To 123,15: Rem Player Box 
+    Ink 2: Bar 500,110 To 554, 135 
+    Ink 0 Bar 501,111 To 554,135 
+    Ink 15 : Bar 501,111 To 553,134: Rem Done Box 
+    Pen 2: Print At (64, 15); "Done" 
+    For T=0 To 108 Step 8 
+        Ink 2: Bar 30,40+T To 60,46+T 
+        Ink 0: Bar 31, 41+T To 60, 46+T 
+        Ink 15: Bar 31, 41+T To 59, 45+T: Rem Buy Boxes 
+        Ink 2: Bar 95,40+T To 125, 46+T 
+        Ink 0 : Bar 96,41+T To 125, 46+T 
+        Ink 15 : Bar 96,41+T To 124, 45+T: Rem Sell Boxes 
+    Next 
+
+    For T=1 To 14 
+        Set Zone T, 30, 40+G To 60, 46+G 
+        G=G+8 
+    Next 
+    G=0 
+    For T=15 To 29 
+        Set Zone T, 95, 40+G To 125, 46+G 
+        G=G+8 
+    Next 
+    Set Zone 30,500,110 To 554, 135 
+    For T=1 To PLAERS 
+        AGAIN: 
+        If T=PLAERS+1 Then Exit 
+        If COMPUTER(T) = 1 
+            T=T+1 
+            Goto AGAIN 
+        End If 
+        Ink 0 Bar 230,6 To 480,16 
+        Ink 2: Bar 231,7 To 480,16 
+        Ink 15 Bar 231,7 To 479,15: Rem Name Box 
+        Pen 2 
+        Print At(4,3); "Buy      Sell" 
+        Print At(22,3); "Weapon                 Price Possesed" 
+        Pen 5 
+        Print At(22,5); "Baby Missile           $1"
+        Print At(22,6); "Missile                $10"
+        Print At(22,7); "Baby Roller            $100" 
+        Print At(22,8); "Roller                 $150"
+        Print At(22,9); "Large Roller           $400"
+        Print At(22,10); "Baby Nuke              $700"
+        Print At(22,11); "Nuke                   $2000"
+        Print At(22,12); "Funky Bomb             $1500"
+        Print At(22,13); "MIRV                   $2000"
+        Print At(22,14); "Death's Head           $7000"
+        Print At(22,15); "Digger                 $200"
+        Print At(22,16); "Earth Mover            $300" 
+        Print At(22,17); "Lazy Boy               $2500"
+        Print At(22,18); "Energy                 $1000"
+
+        Do 
+            If Key State (69) Then Exit Pen 5 
+            For L=1 To 13 
+                Print At(56, L+4); WEAPON (L, T, AMOUNT);" "
+            Next 
+            Print At(56, 18); NRG (T); " " 
+            Pen 2: Print At (4,1); "Player ";T : Pen 5 
+            Print At(20, 1); CREDITS (T);"  "
+            If CREDITS (T) = 0 Then Print At (22,1); "     "
+            Pen 10 
+            Print At(30,1); NAMES (T) 
+            For L=1 To 14 
+                If Mouse Zone=L 
+                    If Mouse Key=1 
+                        If Mouse Zone=14 
+                            If CREDITS (T)-1000<0 
+                                Goto SKIP1 
+                            End If 
+                            NRG (T)=NRG (T)+100 
+                            CREDITS (T) =CREDITS (T)-1000 
+                            Goto SKIP1 
+                        End If 
+                        If WEAPON (L, T, 0)=99 
+                            Goto SKIP1 
+                        End If 
+                        If CREDITS (T)-WEAPONTYPE(L)<0
+                            Goto SKIP1 
+                        End If 
+                        WEAPON (L, T, 0)=WEAPON (L, T, 0)+1 
+                        CREDITS (T) =CREDITS (T)-WEAPONTYPE(L) 
+                        SKIP1: 
+                    End If 
+                End If 
+            Next 
+            For L=15 To 28 
+                If Mouse Zone=L 
+                    If Mouse Key=1 
+                        If Mouse Zone=28 
+                            If NRG (T)=100 
+                                Goto SKIP 
+                            End If 
+                            NRG (T) NRG (T)-100 
+                            CREDITS (T) =CREDITS (T)+1000 
+                            Goto SKIP 
+                        End If 
+                        If Mouse Zone=15 
+                            Goto SKIP 
+                        End If 
+                        If WEAPON (L-14, T, 0)=0 
+                            Goto SKIP 
+                        End If 
+                        WEAPON (L-14, T, 0)=WEAPON (L-14, T, 0)-1 
+                        CREDITS (T) =CREDITS (T)+WEAPONTYPE (L-14) 
+                        SKIP: 
+                    End If 
+                End If 
+            Next 
+            If Key State (68) Then Exit 
+            If Mouse Zone=30 
+                If Mouse Key=1 
+                    Ink 0 Box 500, 110 To 554,135 
+                    Wait 5 
+                    Ink 2: Bar 500, 110 To 554,135 
+                    Ink 0 : Bar 501,111 To 554, 135 
+                    Ink 15: Bar 501,111 To 553,134 : Rem Done Box 
+                    Pen 2 Print At (64, 15); "Done" 
+                    Exit 
+                End If 
+            End If 
+        Loop 
+    Next 
+    BUY=1 
+    WIPE 
+End Proc 
+
+Procedure GENERATE 
+    Flash 3, "(110,2) (220, 2) (330,2) (440,2) (550,2) (660,2) (770,2) (660,2) (550,2) (440, 2) (330,2) (220, 2) (110,2)" 
+    Flash 4, "(700,2) (600, 2) (500, 2) (400, 2) (300, 2) (200,2) (100,2) (200, 2) (300, 2) (400, 2)(500,2)(600, 2) (700,2)" 
+    Cls 0 : Ink 15 
+    XD=0: YD=0: X=0 : Y=0 
+    Do 
+        Polyline XD, YD+100 To X, Y+100 
+        K= Rnd(1) 
+        If Y<30 Then K=1 
+        If Y>140 Then K=0 
+        If K=0 Then Goto UP 
+        If K=1 Then Goto DWN 
+        UP: 
+        XD=X 
+        YD=Y 
+        X=X+Rnd(35) 
+        Y=Y-Rnd(35) 
+        Goto EN 
+        DWN: 
+        XD=X 
+        YD=Y 
+        X=X+Rnd(35) 
+        Y=Y+Rnd(35) 
+        EN: 
+        If X>660 Then Exit 
+    Loop 
+    Paint 0,0 
+    Ink 11 
+    For T=1 To 640 
+        If Point (T, 199)=0 Then Paint T, 199 
+    Next 
+    Ink 15 
+    For T=1 To 640 Step 20 
+        If Point (T, 199)=0 Then Paint T, 199 
+    Next 
+End Proc 
+
+/// page 9
