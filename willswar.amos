@@ -774,3 +774,581 @@ End Proc
 
 
 // page 13
+Procedure WIN_SCREEN 
+    Wait 10 
+    Clear Key 
+    For T=0 To 9 
+        CREDITS (T) =CREDITS (T)*1.3 
+        LAST (T, 1)=0 
+        LAST (T,2)=0 
+        LAST(T, 3)=1 
+    Next 
+    For T=0 To 10 
+        If Left$(Font$(T), 4)="mFas" Then Set Font T 
+    Next 
+    Cls 4 
+    Wait 10 
+    Cls 0 
+    Ink 3,0,4 
+    Paper 0 
+    Text 280,20, "Winner" 
+    Set Font 1 
+    Locate 0,4 
+    For T=1 To PLAERS 
+        If DEATH(T)=0 
+            Ink 4: Centre NAMES (T) 
+            Locate 0,5 
+            Centre "bonus + 5000" 
+            Locate 0,7 
+            Centre "Cash now stands at" 
+            Locate 0,8 
+            CREDITS (T) =CREDITS (T) +5000 
+            Centre Str$ (CREDITS (T)) 
+            ROUNDSWON (T) =ROUNDSWON (T)+1 
+        End If 
+    Next 
+    Wait Key 
+End Proc 
+
+Procedure WIN_SCREEN2 
+    For T=0 To 10 
+        If Left$ (Font$ (T), 4) = "mFas" Then Set Font T 
+    Next 
+    Cls 4 
+    Wait 10 
+    Cls 0 
+    Ink 3,0,4 
+    Paper 0 
+    Text 240,20, "Overall Winner" 
+    Locate 0,4 
+    For T=1 To PLAERS 
+        If ROUNDSWON (T)>MONEY Then MONEY=ROUNDSWON (T) 
+    Next 
+    For T=1 To PLAERS 
+        If MONEY=ROUNDSWON (T) 
+            Locate 0,5 
+            Ink 2: Centre NAMES (T) 
+            Locate 0,7 : Centre "Rounds Won "+Str$ (ROUNDSWON(T)) 
+        End If 
+    Next 
+    Pen 2 
+    Locate 10,10 
+    Print "The Players" 
+    Locate 10,12 
+    For T=1 To PLAERS 
+        Print At(10,11+T); "Player ",T, NAME$ (T), "Rounds Won ", ROUNDSWON (T) 
+    Next 
+    Wait Key 
+End Proc 
+
+Procedure MISSILE [WEAPON] 
+    HT=0 
+    If WEAPON=1 Then Goto SKIP 
+    WEAPON (WEAPON, P, 0)=WEAPON (WEAPON, P, 0)-1 SKIP: 
+    Proc _FIRE_WEAPON 
+    If HIT=1 
+        Sam Loop Off
+        // Sam Play 4 
+        If WEAPON=1 
+            Ink 15 
+            For T=1 To 5 
+                Circle X, Y, T 
+                Circle X+1, Y, T 
+            Next 
+        End If 
+        If WEAPON=2 
+            Ink 15 
+            For T=1 To 8 
+                Circle X, Y, T 
+                Circle X+1, Y, T 
+            Next 
+        End If 
+    End If 
+    If WEAPON=1 Then L=5 
+    If WEAPON=2 Then L=8 
+    EARTH FALL [Y+L, X+WEAPON+8, X-WEAPON*8] 
+End Proc 
+
+Procedure ROLLER[WEAPON] 
+    HIT=0 
+    WEAPON (WEAPON, P, 0) =WEAPON (WEAPON, P, 0)-1 
+    Proc _FIRE_WEAPON 
+    If Y>200 Then Y=199 
+    If X<PLAERS (P,0) Then X=X+3 
+    If X>PLAERS (P, 0) Then X=X-3 
+    If HIT=1 
+        If Point (X+1, Y+1)=15 
+            If Point (X-1,Y-1)=15 
+                Goto RIGHT 
+            End If 
+        End If 
+        If Point(x-1,Y+1)=15 
+            If Point (X+1, Y-1)=15 
+                Goto LEFT 
+            End If 
+        End If 
+    End If 
+    Goto RIGHT 
+    RIGHT: 
+    For T=0 To 500 
+        Ink 15 
+        Plot X,Y 
+        X=X+1 
+        AGAIN: 
+        If Point (X, Y+1)=15 Then Y=Y+1: Goto AGAIN 
+        If Point (X+1,Y) = 11 Then HIT=1: Goto FIN 
+        If X>640 or X<0 Then Exit 
+        For T=1 To PLAERS 
+            If Point(X+1,Y) =T Then HIT=1: Goto FIN 
+        Next 
+        Ink 2 
+        Plot X,Y 
+        Wait Vbl: Wait Vbl 
+        Next 
+    Goto FIN 
+    LEFT: 
+    For T=0 To 500 
+        Ink 15 
+        Plot X,Y 
+        X=X-1 
+        AGAIN2: 
+        If Point (X, Y+1)=15 Then Y=Y+1: Goto AGAIN2 
+        If Point (X-1,Y) = 11 Then HIT=1: Goto FIN 
+        If X>640 or X<0 Then Exit 
+        For T=1 To PLAERS 
+            If Point (X-1,Y) =T Then HIT=1: Goto FIN 
+        Next 
+        Ink 2 
+        Plot X, Y 
+        Wait Vbl: Wait Vbl 
+    Next 
+    FIN: 
+    If WEAPON=3 
+        Sam Loop Off
+        // Sam Play 4
+        Proc _EXPLOSION[5]
+    End If
+    If WEAPON=4 
+        Sam Loop Off
+        // Sam Play 4
+        Proc _EXPLOSION[10]
+    End If
+    If WEAPON=5 
+        Sam Loop Off
+        // Sam Play 4
+        Proc _EXPLOSION[15]
+    End If
+End Proc
+
+Procedure NUKE [WEAPON] 
+    HIT=0 
+    WEAPON (WEAPON, P, 0)=WEAPON (WEAPON, P, 0)-1 
+    Proc _FIRE_WEAPON 
+    If HIT=1 
+        If WEAPON=6 
+            Sam Loop Off
+            // Sam Play 4 
+            Proc _EXPLOSION [10] 
+        End If 
+        If WEAPON=7 
+            Sam Loop Off
+            // Sam Play 4 
+            Proc _EXPLOSION [20] 
+        End If 
+    End If 
+End Proc 
+
+Procedure FUNKY_BOMB 
+    HIT=0 
+    WEAPON (WEAPON, P, 0)=WEAPON (WEAPON, P, 0)-1 
+    Proc _FIRE_WEAPON 
+    Sam Loop Off
+    // Sam Play 4 
+    X1=X: Y1=Y 
+    For BLUBBER=1 To 5 
+        HORIZONTAL=X1 
+        VERTICAL=Y1 
+        U#= (Rnd(600)-300)/7 
+        U2#=-(Rnd(300)/7) 
+        FUNKY (BLUBBER, 0)=U# : FUNKY (BLUBBER, 1)=U2# 
+        V#=0 : T#=0 
+        Do 
+            If G=3 Then Exit 
+            T#=T#+0.055 
+            X=(U#*T#)+HORIZONTAL 
+            V2#=U2#+A+T# : Y=((U2#+V2#)/2*T#)+VERTICAL 
+            Ink 3: Plot X,Y 
+            If Point (X+1, Y+1)=11 Then Exit 
+            If T#>4 Then Exit 
+        Loop 
+        Sam Loop Off
+        // Sam Play 4 
+        HIT (BLUBBER)=X 
+        V#(BLUBBER)=Y 
+        Ink 4 
+        For BOMB= 1 To Rnd(10)+10 
+            Circle X, Y, BOMB 
+            Circle X+1, Y, BOMB 
+        Next 
+    Next 
+    Ink 15 
+    For T=1 To 5 
+        T#=0 
+        Repeat 
+            T#=T#+0.055 
+            X=(FUNKY (T, 0)*T#)+X1 
+            V2# FUNKY (T, 1)+A*T# : Y= ((FUNKY (T, 1)+V2#)/2*T#)+Y1 
+            Plot X, Y 
+        Until T#>3.2 
+        X=HIT(T) 
+        Y=V# (T) 
+        For BOMB=1 To 20 
+            Circle X,Y, BOMB 
+            Circle X+1,Y, BOMB 
+        Next 
+    Next 
+    Plot X1,Y1 
+    HORIZONTAL=150 
+    VERTICAL-50 
+End Proc 
+
+Procedure MIRV [WEAPON] 
+    If WEAPON=9 Then EX=8 
+    If WEAPON=10 Then EX=20 
+    HIT=0 
+    WEAPON (WEAPON, P, 0)=WEAPON (WEAPON, P, 0)-1 
+    X=0 Y=0: T#=0: VNB=0: HEIGHT=8 : WIND#=WIND/15 
+    For TY=1 To 5 
+        HORIZONTAL (TY)=PLAERS (P, 0) 
+        VERTICAL (TY)=PLAERS (P, 1) 
+        U2# (TY)=U2# 
+        HIT(TY)=0 
+        WINDT# (TY)=0 
+    Next 
+    U#(1)=U#-8 
+    U# (2)=U#-4 
+    U# (3)=U# 
+    U#(4)=U#+4 
+    U#(5)=U#+8 
+    For H=1 To 5 
+        YT# (H)=0 
+        XT# (H)=0 
+    Next 
+    Do 
+        For E=1 To 5 
+        HERE: 
+        If E-6 Then Exit 
+        If HIT(E)=1 Then E=E+1: Goto HERE 
+        Ink 15 
+        Plot X(E),Y(E) 
+        X(E)=((U# (E) *XT# (E))+(WIND#*WINDT# (E) *WINDT# (E) ) ) + HORIZONTAL (E) 
+        V2# (E)=U2# (E) + (A*YT# (E)) : Y(E)=((U2# (E) +V2# (E) )/2*YT# (E) ) +VERTICAL (E)- HEIGHT
+        Ink 14 
+        Plot X(E),Y(E) 
+        If Point (X(E)+1,Y(E)+1)=11 Then Proc MIRV_HIT [EX] 
+        For T=1 To PLAERS 
+            If Point (X(E)+1,Y(E)+1)=T Then Proc MIRV_HIT[EX] 
+        Next 
+        If Y(E) >200 Then U2# (E)=-(V2# (E) *0.7): YT# (E)=0 : VERTICAL (E)=200 : HEIGHT=0
+        If Y(E) <0 Then U2# (E)=-(V2# (E) *0.7): YT# (E)=0 : VERTICAL (E)=0 : HEIGHT=0
+        If X(E)>640 Then U# (E)=-(Abs (U# (E) +WINDT# (E) *WIND#)) : XT# (E)=0: HORIZONTAL (E)=640 : WINDT# (E)=0 
+        If X(E) <0 Then U# (E)=-(Abs (U# (E) +WIND#*WINDT# (E))) : XT# (E)=0: HORIZONTAL(E)=1: WINDT# (E)=0 
+        XT# (E)=XT# (E) +0.09499999 
+        YT# (E)=YT# (E) +0.09499999 
+        WINDT# (E)=WINDT# (E) +0.055 
+    Next 
+    If VNB=5 Then Exit 
+    If Key State (69) Then Exit 
+    Loop 
+    Clear Key 
+    VNB=0 
+    HIT=0 
+End Proc 
+
+Procedure MIRV HIT [SIZE] 
+    HIT=0 
+    Sam Loop Off
+    // Sam Play 4 
+    Ink 4 
+    Plot X(E), Y(E) 
+    For T=1 TO SIZE 
+        Circle X(E), Y(E), T 
+        Circle X(E) +1, Y(E), T 
+    Next 
+    Ink 15 
+    Paint X(E), Y(E) 
+    HIT(E)=1 
+    VNB=0 
+    For GHF=1 To 5 
+        If HIT(GHF)=1 Then VNB=VNB+1 
+    Next 
+End Proc 
+
+Procedure DIGGER 
+    HIT=0 
+    WEAPON (WEAPON, P, 0) =WEAPON (WEAPON, P, 0)-1 
+    Proc _FIRE_WEAPON 
+    Sam Loop Off
+    // Sam Play 4 
+    Ink 15 
+    For B=0 To 50 
+        Y=Y+Rnd (3)-1 
+        X=X+Rnd (2)-1 
+        Plot X,Y 
+    Next 
+    For B=0 To 2000 
+        Y=Y+Rnd(2)-1 
+        X=X+Rnd(2)-1 
+        Plot X, Y 
+    Next 
+End Proc 
+
+Procedure EARTH MOVER 
+    HIT=0 
+    WEAPON (WEAPON, P, 0) =WEAPON (WEAPON, P, 0)-1 
+    Proc _FIRE_WEAPON 
+    Sam Loop Off
+    // Sam Play 4 
+    If HIT=1 
+        Ink 9 
+        Plot X, Y 
+        For BOMB-1 To 15 
+            Circle X, Y, BOMB 
+            Circle X+1, Y, BOMB 
+            Circle X-1,Y, BOMB 
+        Next 
+        Ink 15 
+        Paint X, Y 
+    End If 
+End Proc 
+
+Procedure _EXPLOSION [SIZE] 
+    Ink 15 
+    Plot X,Y 
+    Ink 3 
+    For BOMB=1 To SIZE 
+        Circle X,Y, BOMB 
+        Circle X+1, Y, BOMB 
+    Next 
+    For Y1=Y-SIZE TO Y+SIZE+1 
+        For X1=X-(2*SIZE) To X+ (2*SIZE) 
+            Ink Rnd(1)+3 
+            If Point (X1,Y1)=3 Then Plot X1,Y1 
+        Next 
+    Next 
+    Ink 15 
+    For X1-X-(2*SIZE) To X+(2*SIZE) +1 
+        For Y1=Y-SIZE To Y+SIZE 
+            If Point (X1,Y1)=3 or Point (X1,Y1)=4 or Point (X1,Y1)=0 
+                Plot X1,Y1 
+            End If 
+        Next 
+    Next 
+End Proc 
+
+Procedure LAZY_BOY 
+    Limit Mouse 127,0 To 447,400. 
+    Ink 15: Plot X,Y: Plot X+1,Y: Plot X-1,Y: Plot X, Y+1: Plot X, Y-1 
+    Paper 15: Print At (0,0); "Please Select Target" 
+    Repeat 
+        C=X Screen (0,X Mouse) 
+        For CURRENT=1 TO PLAERS 
+            If Point (X Screen (X Mouse), Y Screen (Y Mouse)) =CURRENT 
+                _COLOUR=CURRENT 
+            Exit 
+            End If 
+        Next 
+    Until Mouse Key 
+    HIT=0 
+    WEAPON (WEAPON, P, 0)=WEAPON (WEAPON, P, 0)-1 
+    Proc_FIRE_WEAPON 
+    If X<PLAERS (P,0) Then X=X+3 
+    If X>PLAERS (P, 0) Then X=X-3 
+    If C<X Then Goto LEFT 
+    If C>X Then Goto RIGHT 
+
+    RIGHT: 
+    For T=0 To 500 
+        Ink 15 
+        Plot X,Y 
+        X=X+1 
+        AGAIN: 
+        If Point (X, Y+1)=15 Then Y=Y+1 : Goto AGAIN 
+        If Point (X,Y) = 11 Then Y-Y-1: Goto AGAIN 
+        If X>640 or X<0 Then Exit 
+        If Point (X+1,Y) =_COLOUR Then HIT=1: Goto FIN 
+        If Point (X, Y+1)=_COLOUR Then HIT=1: Goto FIN 
+        If Point (X, Y-1)=_COLOUR Then HIT=1 : Goto FIN 
+        Ink 14 
+        Plot X, Y 
+        Wait Vbl: Wait Vbl 
+    Next 
+    Goto FIN 
+
+    LEFT: 
+    For T=0 To 500 
+        Ink 15 
+        Plot X, Y 
+        X=X-1 
+        AGAIN2: 
+        If Point (X,Y+1)=15 Then Y=Y+1: Goto AGAIN2 
+        If Point (X, Y)=11 Then Y-Y-1: Goto AGAIN2 
+        If X>640 or X<0 Then Exit 
+        If Point (X-1,Y)=_COLOUR Then HIT=1: Goto FIN 
+        If Point (X, Y+1)=_COLOUR Then HIT=1 : Goto FIN 
+        If Point (X, Y-1)=_COLOUR Then HIT=1: Goto FIN 
+        Ink 14 
+        Plot X, Y 
+        Wait Vbl: Wait Vbl 
+    Next 
+
+    FIN: 
+    Sam Loop Off
+    // Sam Play 4 
+    Ink 15 
+    For T=1 To 6 
+        Circle X,Y, T 
+        Circle X+1,Y, T 
+    Next 
+End Proc 
+
+Procedure WIPE 
+    Y=0 : X=0 
+    Ink O 
+    GOB=GOB+1 
+    If GOB=10 Then GOB=1 
+    On GOB Gosub 1,2,3,4,5,6,7,8,9 
+    Goto FIN 
+    1 
+    For T=0 To 1500 
+        X=Rnd(31) *20 : Y= Rnd (9)*20 
+        If Point (X+5, Y+5) <> 0 Then Bar X, Y To X+20,Y+20 
+    Next 
+    Cls 0 
+    Return 
+    2 
+    For J=0 To 14 
+        For T=0+J To 58-J 
+            X=T*11 
+            Bar 0+X, 0+Y To 10+X, 10+Y 
+        Next 
+        For T=0+J To 18-J 
+            Y=T*11 
+            Bar 0+X, 0+Y To 10+X, 10+Y 
+        Next 
+        For T=58-J To 0+J Step -1 
+            X=T*11 
+            Bar 0+X, 0+Y To 10+X, 10+Y 
+        Next 
+        For T=18-J To 1+J Step -1 
+            Y=T*11 
+            Bar 0+X, 0+Y To 10+X, 10+Y 
+        Next 
+    Next 
+    Return 
+    3 
+    For Y=0 To 200 Step 10 
+        For X=0 To 640 Step 10 
+            Bar X,Y To X+10, Y+10 
+        Next 
+    Next 
+    Return 
+    4 
+    For X=0 To 640 Step 10 
+        For Y=0 To 200 Step 10 
+            Bar X,Y To X+10, Y+10 Next 
+        Next 
+    Return 
+    5 
+    For T=1 To 640 Step 10 
+        Draw 0,199 To T, 0 
+        Draw 639,199 To 639-T, 0 
+        Draw 0,0 To T, 199 
+        Draw 639,0 To 640-T, 199 
+    Next 
+    For T=1 To 200 Step 5 
+        Draw 0,199 To 639, T 
+        Draw 639,199 To 0, T 
+        Draw 0,0 To 639, 200-T 
+        Draw 639,0 To 0,200-T 
+    Next 
+    For T=200 To 1 Step -5 
+        Draw 0,199 To 639, T 
+        Draw 639,199 To 0,T 
+        Draw 0,0 To 639,200-T 
+        Draw 639,0 To 0,200-T 
+    Next 
+    For T=640 To 1 Step -10 
+        Draw 0,199 To T,0 
+        Draw 639,199 To 639-T, 0 
+        Draw 0,0 To T, 199 
+        Draw 639,0 To 640-T, 199 
+    Next 
+    Cls 0 
+    Return 
+    6 
+    L=1 
+    For T=0 To 640 Step L 
+        If T-320 Then L=2 
+        Draw 0,0 To T, 199 
+        If T>200 Then Goto SKIP 
+        Draw 0,0 To 640, T 
+        SKIP: 
+    Next 
+    Return 
+    7 
+    Ink 0 
+    For X=0 To 320 Step 10 
+        For Y=0 To 200 Step 10 
+            Bar X, Y To X+10, Y+10 
+            Bar 630-X, 200-Y To 640-X, 200-Y+10 
+        Next 
+    Next 
+    Return 
+    8 
+    For T=1 To 200 Step 6 
+        Bar 0,T To 640, T+2 
+        Wait Vbl 
+    Next 
+    For T=1 To 640 Step 12 
+        Bar T,0 To T+4, 200 
+        Wait Vbl 
+    Next 
+    9 
+    Return 
+    For T1=1 To 4 
+        Ink 0 
+        For T=0 To 320 Step 10-T1 
+            Draw 320, 100 To 320+T, 0 
+        Next 
+        For T=0 To 200 Step 5-(T1/2) 
+            Draw 320, 100 To 640, T 
+        Next 
+        For T=0 To 640 Step 10-T1 
+            Draw 320, 100 To 640-T, 200 
+        Next 
+        For T=0 To 200 Step 5-(T1/2) 
+            Draw 320, 100 To 0,200-T 
+        Next 
+        For T=0 To 320 Step 10-T1 
+            Draw 320, 100 To T, 0 
+        Next 
+    Next 
+    Return 
+    FIN: 
+    If BUY 0 Then Goto SKIPTHEJOB 
+    Screen Hide 0 
+    GENERATE 
+    PLACE_SPRITES 
+    Screen Show 0 
+    SKIPTHEJOB: 
+    BUY=0 
+End Proc
+
+Procedure EARTH_FALL [BOTTOM, RIGHT, LEFT] 
+    Def Scroll 1, LEFT, 0 To RIGHT, BOTTOM,, 1 
+    For T=0 To 50 
+        If Point (X, BOTTOM) = 11 Then Exit 
+        Scroll 1 
+    Next 
+End Proc 
