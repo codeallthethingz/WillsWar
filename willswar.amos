@@ -1,17 +1,40 @@
-// TODO replace "Ink 0" with "Ink 0 :"
-// TODO replace "N:M" with "N : M"
-// TODO replace " *; *" with ";"
-// TODO replace "//" with "Rem"
-// TODO intelligently replace "NAMES" with "NAME$"
-// TODO replace " [" with "["
-// TODO replace " = " with "="
+`*********************************************************************
+`****** \\           // ||    ||     ||       //\\   //===  **********
+`******* \\         //  ||    ||     ||       \\//  //     ***********
+`******** \\       //   ||    ||     ||        //   \\==\\  **********
+`********* \\ /\\ //    ||    ||     ||                 //   *********
+`********** \// \//     ||    ||==== ||====         ===//   **********
+`****************************-Version 1.1-****************************
+`******        \\           //  //\     ||   \\             **********
+`*******        \\         //  // \\    ||    \\           ***********
+`********        \\       //  //   \\   ||    //            **********
+`*********        \\ /\\ //  //     \\  ||    \\             *********
+`**********        \// \//  //       \\ ||     \\           **********
+`*********************************************************************
+` By Will Warren
+`*********************************************************************
+` This is a game I wrote in 1994. It is a multi-player game where you
+` have to destroy your opponent. You can buy weapons and use them
+` against your opponent. The game is very similar to the old Amiga
+` game "Scorched Tanks". 
+`*********************************************************************
 
-Dim PLAERS(9,1), NAMES(9), WEAPON(13,9,0), WEAPONTYPE(13), CREDITS(9) 
+
+
+
+
+
+
+
+
+
+
+Dim PLAERS(9,1), NAME$(9), WEAPON(13,9,0), WEAPONTYPE(13), CREDITS(9) 
 Dim U#(5), NRG(9), COLOUR(9), WEAPONNAMES(13), FUNKY(5, 1), HIT(5), V2#(5) 
 Dim V#(5), U2#(5), X(5), Y(5), DEATH(9), LAST(9,3), COMPUTER(9), ROUNDSWON(9) 
 Dim WINDT#(5), WIND#(5), XT#(5), YT#(5), HORIZONTAL(5), VERTICAL(5) 
 
-Global PLAERS, PLAERS(), CREDIT, NAMES(), F, P, ROUNDS, WEAPON(), GHF, VNB, E 
+Global PLAERS, PLAERS(), CREDIT, NAME$(), F, P, ROUNDS, WEAPON(), GHF, VNB, E 
 Global WEAPONTYPE(), _COLOUR(), CREDITS(), WEAPONNAMES(),X(),Y(), NRG() 
 Global WEAPON, U#, U2#,X,Y,A, HIT, FUNKY(), HIT(), V#(), V2#(), U#(), U2#() 
 Global DEATH(), ALLDEAD, LAST(), POWER#, POWER2#, POS1, POS2, TURRET, TURRET2 
@@ -51,21 +74,21 @@ Procedure INTRO
     17 #1 
     Set Rainbow 1,15,2000,"","", "(10,1,1)" 
     Rainbow 1,1,0,256 
-    Curs Off: Ink 2,0,0 Paper 0 Ink 2: Pen 2: Cls 0 
-    // Sam Bank 1 
+    Curs Off : Ink 2,0,0 Paper 0 Ink 2 : Pen 2 : Cls 0 
+    Rem Sam Bank 1 
     Get Rom Fonts 
     For T=1 To 10 
         If Left$(Font$(T), 4)="mFas" Then Set Font T 
     Next 
     Text 100, 100, "Flamboyent Destruction Ltd. " 
     Text 250, 125, "Presents" 
-    // Sam Play 3 - A. Schwarzonegger sample 
+    Rem Sam Play 3 Rem A. Schwarzonegger sample 
     Wait 200 
     For T=0 To 15
-        // Sam Play 4
+        Rem Sam Play 4
         Wait 7
     Next 
-    Cls 3: Wait 10: Cls 0: Ink 4 
+    Cls 3 : Wait 10 : Cls 0 : Ink 4 
     Text 261,75, "Will's" 
     Text 210,130,"W A R" 
 End Proc 
@@ -74,7 +97,7 @@ Procedure _ASSIGN_VALUES
     For T=0 To 9 
         PLAERS(T, 0)=0 
         PLAERS(T, 1)=1 
-        NAMES(T)="" 
+        NAME$(T)="" 
         NRG(T)=1000 
         DEATH(T)=0 
         LAST(T, 1)=0 
@@ -120,14 +143,14 @@ End Proc
 
 Procedure _START_SCREEN 
     Sam Loop On 
-    // Sam Play 1 
+    Rem Sam Play 1 
     Wait 200 
     Cls 0 
     GENERATE 
     ROUNDS=5 
     PLAERS=2 
     CREDIT=5000 
-    Ink 10,15,15: Text 210,20,"W   A   R" Set Font 1 
+    Ink 10,15,15 : Text 210,20,"W   A   R" Set Font 1 
     H=15 
     Paper H 
     Reserve Zone 5 
@@ -136,90 +159,90 @@ Procedure _START_SCREEN
     Set Zone 3,24,110 To 31,125 
     Set Zone 4,24,155 To 31,170 
     Set Zone 5,5,180 To 65,198 
-    Ink 0,10,10: Bar 0,0 To 70, 200 
-    Ink 2: Bar 0,0 To 69,199 
+    Ink 0,10,10 : Bar 0,0 To 70, 200 
+    Ink 2 : Bar 0,0 To 69,199 
     Ink H Bar 1,1 To 69,199 : Rem Main Box 
     Ink 0 Bar 5,180 To 65,198 
-    Ink 2: Bar 5,180 To 64,197 
-    Ink H Bar 6,181 To 64, 197: Rem Exit Box 
-    Ink 2: Box 5,2 To 60,40: Rem White out line of top box Ink 0 Box 6,3 To 60,40: Rem Black out line of top box Ink H: Box 6,3 To 59,39: Rem Top box 
-    Paint 25,25: Rem fill top main box 
-    Pen 1 Print At(2,2); "S"; : Pen 2: Print "tart" 
-    Ink 1,15,15: Text 21, 192, "Q": Ink 2: Text 30, 192, "uit" 
-    Print At(1, 6); "Players" 
-    Print At(2,7); PLAERS 
-    Print At(1,11); "Rounds" 
-    Print At(2, 12); ROUNDS Rem 
+    Ink 2 : Bar 5,180 To 64,197 
+    Ink H Bar 6,181 To 64, 197 : Rem Exit Box 
+    Ink 2 : Box 5,2 To 60,40 : Rem White out line of top box Ink 0 Box 6,3 To 60,40 : Rem Black out line of top box Ink H : Box 6,3 To 59,39 : Rem Top box 
+    Paint 25,25 : Rem fill top main box 
+    Pen 1 Print At(2,2);"S";: Pen 2 : Print "tart" 
+    Ink 1,15,15 : Text 21, 192, "Q": Ink 2 : Text 30, 192, "uit" 
+    Print At(1, 6);"Players" 
+    Print At(2,7);PLAERS 
+    Print At(1,11);"Rounds" 
+    Print At(2, 12);ROUNDS Rem 
     Rem ----------------- The Triangles 
-    Ink 8: Polygon 24,70 To 30,70 To 27,65 To 24,70 
+    Ink 8 : Polygon 24,70 To 30,70 To 27,65 To 24,70 
     Polygon 24,75 To 30,75 To 27,80 To 24,75 
-    Ink 0: Polyline 24,71 To 31,71 To 28,65 
+    Ink 0 : Polyline 24,71 To 31,71 To 28,65 
     Polyline 24, 74 To 31, 74 To 28,80 
-    Ink 2: Polyline 27,65 To 24,70 
+    Ink 2 : Polyline 27,65 To 24,70 
     Polyline 27,80 To 24,75 
     Rem ---------------- The Second Triangles 
-    Ink 8: Polygon 24,115 To 30,115 To 27,110 To 24, 115 
+    Ink 8 : Polygon 24,115 To 30,115 To 27,110 To 24, 115 
     Polygon 24,120 To 30,120 To 27,125 To 24, 120 
-    Ink 0: Polyline 24, 116 To 31,116 To 28,110 
+    Ink 0 : Polyline 24, 116 To 31,116 To 28,110 
     Polyline 24,119 To 31,119 To 28,125 
-    Ink 2: Polyline 27, 110 To 24,115 
+    Ink 2 : Polyline 27, 110 To 24,115 
     Polyline 27,125 To 24, 120 
     Rem ---------------- The Third Triangles 
-    Ink 8: Polygon 24, 150 To 30,150 To 27,155 To 24, 150 
+    Ink 8 : Polygon 24, 150 To 30,150 To 27,155 To 24, 150 
     Polygon 24, 165 To 30, 165 To 27,170 To 24, 165 
-    Ink 0: Polyline 24,161 To 31,161 To 28,155
+    Ink 0 : Polyline 24,161 To 31,161 To 28,155
     Polyline 24,164 To 31,164 To 28,170 
-    Ink 2: Polyline 27,155 To 24,160 
+    Ink 2 : Polyline 27,155 To 24,160 
     Polyline 27,170 To 24,165 
     Rem -----------------------------
 
     Do 
-        If Key State(69) Then Sam Stop: Edit 
+        If Key State(69) Then Sam Stop : Edit 
         STRTS Inkey$ 
         If Key State(68) Then STRTS="S" 
         Wait 3 
         Ink O 
-        Polyline 24,71 To 31,71 To 28,65: Rem First Trianle
+        Polyline 24,71 To 31,71 To 28,65 : Rem First Trianle
         Polyline 24, 74 To 31, 74 To 28,80 
-        Polyline 24, 116 To 31,116 To 28,110: Rem Second
+        Polyline 24, 116 To 31,116 To 28,110 : Rem Second
         Polyline 24,119 To 31,119 To 28,125 
-        Polyline 24, 161 To 31, 161 To 28, 155: Rem Third
+        Polyline 24, 161 To 31, 161 To 28, 155 : Rem Third
         Polyline 24, 164 To 31,164 To 28,170 
          
         If Mouse Zone=1 and Mouse Click 
-            Ink 2: Box 5,2 To 60,40 
+            Ink 2 : Box 5,2 To 60,40 
             Wait Vbl 
-            Ink 0: Box 5,2 To 60,40 
+            Ink 0 : Box 5,2 To 60,40 
             Exit 
         End If 
         If Mouse Zone=2 and Mouse Key=1 
-            PLAERS PLAERS-1: Ink 31: Polyline 24, 74 To 31, 74 To 28,80 
+            PLAERS PLAERS-1 : Ink 31 : Polyline 24, 74 To 31, 74 To 28,80 
         End If 
         If Mouse Zone=2 and Mouse Key=2 
-            PLAERS=PLAERS+1: Ink 31: Polyline 24,71 To 31,71 To 28,65 
+            PLAERS=PLAERS+1 : Ink 31 : Polyline 24,71 To 31,71 To 28,65 
         End If 
         If Mouse Zone=3 and Mouse Key=1 
-            ROUNDS=ROUNDS-5: Ink 31: Polyline 24,119 To 31,119 To 28,125
+            ROUNDS=ROUNDS-5 : Ink 31 : Polyline 24,119 To 31,119 To 28,125
         End If 
         If Mouse Zone=3 and Mouse Key=2 
-            ROUNDS=ROUNDS+5 : Ink 31: Polyline 24, 116 To 31,116 To 28,110 
+            ROUNDS=ROUNDS+5 : Ink 31 : Polyline 24, 116 To 31,116 To 28,110 
         End If 
         If Mouse Zone=4 and Mouse Key=1 
-            CREDIT=CREDIT-500: Ink 2: Polyline 24,164 To 31, 164 To 28,170 
+            CREDIT=CREDIT-500 : Ink 2 : Polyline 24,164 To 31, 164 To 28,170 
         End If 
         If Mouse Zone=4 and Mouse Key=2 
-            CREDIT=CREDIT+500: Ink 2: Polyline 24, 161 To 31,161 To 28,155 
+            CREDIT=CREDIT+500 : Ink 2 : Polyline 24, 161 To 31,161 To 28,155 
         End If 
         If Mouse Zone=5 and Mouse Key 
             Ink 2 : Bar 5,180 To 65,198 
-            Ink 0: Bar 5,180 To 64,197 
-            Ink H: Bar 6,181 To 64,197 : Rem Exit Box 
-            Sam Stop: End 
+            Ink 0 : Bar 5,180 To 64,197 
+            Ink H : Bar 6,181 To 64,197 : Rem Exit Box 
+            Sam Stop : End 
         End If 
         If Upper$(STRT$)="S" 
-            Ink 2: Box 5,2 To 60,40 
+            Ink 2 : Box 5,2 To 60,40 
             Wait Vbl 
-            Ink 0: Box 5,2 To 60,40 
+            Ink 0 : Box 5,2 To 60,40 
             Exit 
         End If 
         If Key State(78) Then PLAERS=PLAERS+1 
@@ -232,13 +255,13 @@ Procedure _START_SCREEN
         If ROUNDS=1005 Then ROUNDS=5 
         If CREDIT=0 Then CREDIT=10000 
         If CREDIT=10500 Then CREDIT=500 
-        Print At(1, 17); "Credits" 
-        If ROUNDS>0 and ROUNDS<9 Then Print At(1,12);"  "; ROUNDS;"   " 
-        If ROUNDS>9 and ROUNDS<99 Then Print At(1,12);"  "; ROUNDS;"  " 
+        Print At(1, 17);"Credits" 
+        If ROUNDS>0 and ROUNDS<9 Then Print At(1,12);"  ";ROUNDS;"   " 
+        If ROUNDS>9 and ROUNDS<99 Then Print At(1,12);"  ";ROUNDS;"  " 
         If ROUNDS>99 and ROUNDS<1001 Then Print At(1, 12);ROUNDS;"  " 
         If CREDIT>0 and CREDIT<999 Then Print At(1, 18);CREDIT;"   " 
-        If CREDIT>1001 and CREDIT<10001 Then Print At(1, 18); CREDIT;"  " 
-        Print At(2,7); PLAERS 
+        If CREDIT>1001 and CREDIT<10001 Then Print At(1, 18);CREDIT;"  " 
+        Print At(2,7);PLAERS 
     Loop 
 
     For H=1 To 9 
@@ -248,31 +271,31 @@ End Proc
 
 
 Procedure _PLAYERS_NAMES 
-    // Sam Stop 
+    Rem Sam Stop 
     Set Font 1 
     Cls 0 
     For F=1 To PLAERS 
-        Ink 2: Bar 150,50 To 500,82 
-        Ink 0: Bar 151,51 To 500,82 
-        Ink 15: Bar 151,51 To 499,81: Rem Main Requester 
-        Ink 2: Bar 164,54 To 224,64 
+        Ink 2 : Bar 150,50 To 500,82 
+        Ink 0 : Bar 151,51 To 500,82 
+        Ink 15 : Bar 151,51 To 499,81 : Rem Main Requester 
+        Ink 2 : Bar 164,54 To 224,64 
         Ink 0 Bar 165,55 To 224,64 
-        Ink 15: Bar 165,55 To 223,63: Rem Reauester Name Box 
-        Ink 0: Bar 230,54 To 480,64 
-        Ink 2: Bar 231,55 To 480,64 
-        Ink 15: Bar 231,55 To 479,63: Rem Name Box 
-        Ink 2: Bar 164,68 To 224,78 
+        Ink 15 : Bar 165,55 To 223,63 : Rem Reauester Name Box 
+        Ink 0 : Bar 230,54 To 480,64 
+        Ink 2 : Bar 231,55 To 480,64 
+        Ink 15 : Bar 231,55 To 479,63 : Rem Name Box 
+        Ink 2 : Bar 164,68 To 224,78 
         Ink 0 Bar 165,69 To 224,78 
-        Ink 15 Bar 165,69 To 223,77: Rem Player Box 
-        Print At(22,7); "Name?" 
-        Ink 2,15,15: Text 169, 76, "Player" 
-        Ink 2: Bar 240,68 To 260,78 
-        Ink 0: Bar 241,69 To 260,78 
-        Ink F: Bar 241,69 To 259,77: Rem Colour Box 
-        Ink 2: Bar 420,68 To 440,78 
-        Ink 0: Bar 421,69 To 440,78 
-        Ink 15: Bar 421,69 To 439,77: Rem Computer Box 
-        Ink 2: Text 330,76, "Computer" 
+        Ink 15 Bar 165,69 To 223,77 : Rem Player Box 
+        Print At(22,7);"Name?" 
+        Ink 2,15,15 : Text 169, 76, "Player" 
+        Ink 2 : Bar 240,68 To 260,78 
+        Ink 0 : Bar 241,69 To 260,78 
+        Ink F : Bar 241,69 To 259,77 : Rem Colour Box 
+        Ink 2 : Bar 420,68 To 440,78 
+        Ink 0 : Bar 421,69 To 440,78 
+        Ink 15 : Bar 421,69 To 439,77 : Rem Computer Box 
+        Ink 2 : Text 330,76, "Computer" 
         Reserve Zone 2 
         Set Zone 1,420,68 To 440,78 
         Set Zone 2,230,54 To 480,64 
@@ -280,19 +303,19 @@ Procedure _PLAYERS_NAMES
         Wait 4 
         Do 
             If Mouse Zone=1 and Mouse Key=1 
-                Ink 2: Text 426,76, "X" 
+                Ink 2 : Text 426,76, "X" 
                 COMPUTER(F)=1 
                 If NAME$(F)="" 
                     NAME$(F)="Com" +Str$(F) 
-                    Print At(30,7); NAME$(F) 
+                    Print At(30,7);NAME$(F) 
                 End If 
             End If 
             If Mouse Zone=1 and Mouse Key=2 
-                Ink 15: Bar 421,69 To 439,77 
+                Ink 15 : Bar 421,69 To 439,77 
                 COMPUTER(F)=0 
             End If 
             If Mouse Zone=2 and Mouse Key 
-                Ink 15: Bar 231,55 To 479,63 
+                Ink 15 : Bar 231,55 To 479,63 
                 NAME$(F)="" 
                 TAKE DATA[30,7] 
                 Wait 10 : Clear Key 
@@ -304,19 +327,19 @@ Procedure _PLAYERS_NAMES
 End Proc 
 
 Procedure TAKE DATA[X,Y] 
-    Wait 10: Clear Key 
-    Print At(X, Y); "_" 
+    Wait 10 : Clear Key 
+    Print At(X, Y);"_" 
     For T=0 To 25 
         Repeat 
             If Key State(68) Then Goto FIN 
             T$=Inkey$ 
         Until T$<>"" 
         If Key State(65) Then T$="" 
-        NAME$(F)= NAMES(F) +T$ 
-        Print At(X, Y); NAME$(F); "_" 
+        NAME$(F)=NAME$(F) +T$ 
+        Print At(X, Y);NAME$(F);"_" 
     Next 
     FIN: 
-    Print At(X, Y); NAMES(F);"  "
+    Print At(X, Y);NAME$(F);"  "
     Clear Key 
 End Proc 
 
@@ -324,7 +347,7 @@ End Proc
 Procedure BUY WEAPONS 
     Cls 15 
     Ink 2,15,15 
-    Paper 15: Pen 2 
+    Paper 15 : Pen 2 
     For T=1 To PLAERS
         NRG(T)=1000 
         X=0 : Y=0 
@@ -336,21 +359,21 @@ Procedure BUY WEAPONS
     Ink 15 : Bar 1,1 To 638,198 : Rem Main Requester
     Ink 0 : Bar 164,6 To 224,16 
     Ink 2 : Bar 165,7 To 224, 16 
-    Ink 15 : Bar 165,7 To 223,15: Rem Cash Box 
+    Ink 15 : Bar 165,7 To 223,15 : Rem Cash Box 
     Ink 2 : Bar 8,6 To 124, 16 
     Ink 0 : Bar 9,7 To 124, 16 
-    Ink 15 : Bar 9,7 To 123,15: Rem Player Box 
-    Ink 2: Bar 500,110 To 554, 135 
+    Ink 15 : Bar 9,7 To 123,15 : Rem Player Box 
+    Ink 2 : Bar 500,110 To 554, 135 
     Ink 0 Bar 501,111 To 554,135 
-    Ink 15 : Bar 501,111 To 553,134: Rem Done Box 
-    Pen 2: Print At(64, 15); "Done" 
+    Ink 15 : Bar 501,111 To 553,134 : Rem Done Box 
+    Pen 2 : Print At(64, 15);"Done" 
     For T=0 To 108 Step 8 
-        Ink 2: Bar 30,40+T To 60,46+T 
-        Ink 0: Bar 31, 41+T To 60, 46+T 
-        Ink 15: Bar 31, 41+T To 59, 45+T: Rem Buy Boxes 
-        Ink 2: Bar 95,40+T To 125, 46+T 
+        Ink 2 : Bar 30,40+T To 60,46+T 
+        Ink 0 : Bar 31, 41+T To 60, 46+T 
+        Ink 15 : Bar 31, 41+T To 59, 45+T : Rem Buy Boxes 
+        Ink 2 : Bar 95,40+T To 125, 46+T 
         Ink 0 : Bar 96,41+T To 125, 46+T 
-        Ink 15 : Bar 96,41+T To 124, 45+T: Rem Sell Boxes 
+        Ink 15 : Bar 96,41+T To 124, 45+T : Rem Sell Boxes 
     Next 
 
     For T=1 To 14 
@@ -366,43 +389,43 @@ Procedure BUY WEAPONS
     For T=1 To PLAERS 
         AGAIN: 
         If T=PLAERS+1 Then Exit 
-        If COMPUTER(T) = 1 
+        If COMPUTER(T)=1 
             T=T+1 
             Goto AGAIN 
         End If 
         Ink 0 Bar 230,6 To 480,16 
-        Ink 2: Bar 231,7 To 480,16 
-        Ink 15 Bar 231,7 To 479,15: Rem Name Box 
+        Ink 2 : Bar 231,7 To 480,16 
+        Ink 15 Bar 231,7 To 479,15 : Rem Name Box 
         Pen 2 
-        Print At(4,3); "Buy      Sell" 
-        Print At(22,3); "Weapon                 Price Possesed" 
+        Print At(4,3);"Buy      Sell" 
+        Print At(22,3);"Weapon                 Price Possesed" 
         Pen 5 
-        Print At(22,5); "Baby Missile           $1"
-        Print At(22,6); "Missile                $10"
-        Print At(22,7); "Baby Roller            $100" 
-        Print At(22,8); "Roller                 $150"
-        Print At(22,9); "Large Roller           $400"
-        Print At(22,10); "Baby Nuke              $700"
-        Print At(22,11); "Nuke                   $2000"
-        Print At(22,12); "Funky Bomb             $1500"
-        Print At(22,13); "MIRV                   $2000"
-        Print At(22,14); "Death's Head           $7000"
-        Print At(22,15); "Digger                 $200"
-        Print At(22,16); "Earth Mover            $300" 
-        Print At(22,17); "Lazy Boy               $2500"
-        Print At(22,18); "Energy                 $1000"
+        Print At(22,5);"Baby Missile           $1"
+        Print At(22,6);"Missile                $10"
+        Print At(22,7);"Baby Roller            $100" 
+        Print At(22,8);"Roller                 $150"
+        Print At(22,9);"Large Roller           $400"
+        Print At(22,10);"Baby Nuke              $700"
+        Print At(22,11);"Nuke                   $2000"
+        Print At(22,12);"Funky Bomb             $1500"
+        Print At(22,13);"MIRV                   $2000"
+        Print At(22,14);"Death's Head           $7000"
+        Print At(22,15);"Digger                 $200"
+        Print At(22,16);"Earth Mover            $300" 
+        Print At(22,17);"Lazy Boy               $2500"
+        Print At(22,18);"Energy                 $1000"
 
         Do 
             If Key State(69) Then Exit Pen 5 
             For L=1 To 13 
-                Print At(56, L+4); WEAPON(L, T, AMOUNT);" "
+                Print At(56, L+4);WEAPON(L, T, AMOUNT);" "
             Next 
-            Print At(56, 18); NRG(T); " " 
-            Pen 2: Print At(4,1); "Player ";T : Pen 5 
-            Print At(20, 1); CREDITS(T);"  "
-            If CREDITS(T) = 0 Then Print At(22,1); "     "
+            Print At(56, 18);NRG(T);" " 
+            Pen 2 : Print At(4,1);"Player ";T : Pen 5 
+            Print At(20, 1);CREDITS(T);"  "
+            If CREDITS(T)=0 Then Print At(22,1);"     "
             Pen 10 
-            Print At(30,1); NAMES(T) 
+            Print At(30,1);NAME$(T) 
             For L=1 To 14 
                 If Mouse Zone=L 
                     If Mouse Key=1 
@@ -411,7 +434,7 @@ Procedure BUY WEAPONS
                                 Goto SKIP1 
                             End If 
                             NRG(T)=NRG(T)+100 
-                            CREDITS(T) =CREDITS(T)-1000 
+                            CREDITS(T)=CREDITS(T)-1000 
                             Goto SKIP1 
                         End If 
                         If WEAPON(L, T, 0)=99 
@@ -421,7 +444,7 @@ Procedure BUY WEAPONS
                             Goto SKIP1 
                         End If 
                         WEAPON(L, T, 0)=WEAPON(L, T, 0)+1 
-                        CREDITS(T) =CREDITS(T)-WEAPONTYPE(L) 
+                        CREDITS(T)=CREDITS(T)-WEAPONTYPE(L) 
                         SKIP1: 
                     End If 
                 End If 
@@ -434,7 +457,7 @@ Procedure BUY WEAPONS
                                 Goto SKIP 
                             End If 
                             NRG(T) NRG(T)-100 
-                            CREDITS(T) =CREDITS(T)+1000 
+                            CREDITS(T)=CREDITS(T)+1000 
                             Goto SKIP 
                         End If 
                         If Mouse Zone=15 
@@ -444,7 +467,7 @@ Procedure BUY WEAPONS
                             Goto SKIP 
                         End If 
                         WEAPON(L-14, T, 0)=WEAPON(L-14, T, 0)-1 
-                        CREDITS(T) =CREDITS(T)+WEAPONTYPE(L-14) 
+                        CREDITS(T)=CREDITS(T)+WEAPONTYPE(L-14) 
                         SKIP: 
                     End If 
                 End If 
@@ -454,10 +477,10 @@ Procedure BUY WEAPONS
                 If Mouse Key=1 
                     Ink 0 Box 500, 110 To 554,135 
                     Wait 5 
-                    Ink 2: Bar 500, 110 To 554,135 
+                    Ink 2 : Bar 500, 110 To 554,135 
                     Ink 0 : Bar 501,111 To 554, 135 
-                    Ink 15: Bar 501,111 To 553,134 : Rem Done Box 
-                    Pen 2 Print At(64, 15); "Done" 
+                    Ink 15 : Bar 501,111 To 553,134 : Rem Done Box 
+                    Pen 2 Print At(64, 15);"Done" 
                     Exit 
                 End If 
             End If 
@@ -471,10 +494,10 @@ Procedure GENERATE
     Flash 3, "(110,2)(220, 2)(330,2)(440,2)(550,2)(660,2)(770,2)(660,2)(550,2)(440, 2)(330,2)(220, 2)(110,2)" 
     Flash 4, "(700,2)(600, 2)(500, 2)(400, 2)(300, 2)(200,2)(100,2)(200, 2)(300, 2)(400, 2)(500,2)(600, 2)(700,2)" 
     Cls 0 : Ink 15 
-    XD=0: YD=0: X=0 : Y=0 
+    XD=0 : YD=0 : X=0 : Y=0 
     Do 
         Polyline XD, YD+100 To X, Y+100 
-        K= Rnd(1) 
+        K=Rnd(1) 
         If Y<30 Then K=1 
         If Y>140 Then K=0 
         If K=0 Then Goto UP 
@@ -504,7 +527,7 @@ Procedure GENERATE
     Next 
 End Proc 
 
-/// page 9
+/Rem page 9
 
 Procedure PLACE_SPRITES 
     For T=1 TO PLAERS 
@@ -529,21 +552,21 @@ Procedure TAKE_COORDINATE
     WIND=Rnd(200)-100 
     If COMPUTER(P)=1 Then Goto FIN5 
     Paper 8 : Pen 2 
-    Ink 2: Bar 0,0 To 638,20 
-    nk 10: Bar 1,1 To 638,20 
-    Ink 8: Bar 1,1 To 637,19: Rem Main box 
-    Ink 2: Bar 250,11 To 270,17 
-    Ink 0: Bar 251,12 To 270,17 
-    Ink P : Bar 251,12 To 269,16: Rem player colour box 
+    Ink 2 : Bar 0,0 To 638,20 
+    nk 10 : Bar 1,1 To 638,20 
+    Ink 8 : Bar 1,1 To 637,19 : Rem Main box 
+    Ink 2 : Bar 250,11 To 270,17 
+    Ink 0 : Bar 251,12 To 270,17 
+    Ink P : Bar 251,12 To 269,16 : Rem player colour box 
     Ink 2,8,8 
     POWER#=LAST(P,1) 
     POWER2#=LAST(P, 2) 
     WEAPON=LAST(P,3) 
     If WEAPON(WEAPON, P, 0)=0 Then WEAPON=1 
     Ink 2 : Text 220,8, "Player " 
-    Ink 2: Text 20,8, "Horizontal power    = " 
-    Ink 2: Text 20,17, "Vertical power     = "
-    Ink 6: Text 330,8, "Weapon" 
+    Ink 2 : Text 20,8, "Horizontal power=" 
+    Ink 2 : Text 20,17, "Vertical power="
+    Ink 6 : Text 330,8, "Weapon" 
     Ink 5 : Text 500, 8, "Energy" 
     Ink 0 : Text 580,8, "Wind" 
     If Sgn(WIND)=-1 Then Text 580, 17, "<-" 
@@ -594,13 +617,13 @@ Procedure TAKE_COORDINATE
     FIN5: 
     If COMPUTER(P)=1 Then COMPUTER 
     Clear Key 
-    LAST(P, 1) = POWER# 
+    LAST(P, 1)=POWER# 
     LAST(P,2)=POWER2# 
     LAST(P, 3)=WEAPON 
     U#=POWER#/7 
     U2#=-POWER2#/7 
     A=10 
-    Ink 15: Bar 0,0 To 640,20 
+    Ink 15 : Bar 0,0 To 640,20 
 End Proc 
 
 Procedure TURRET 
@@ -616,28 +639,28 @@ End Proc
 
 Pedure _FIRE WEAPON_TYPE 
     Sam Loop Off 
-    // Sam Play 3 
+    Rem Sam Play 3 
     For T=1 To 2 
-        If WEAPON=T Then Proc MISSILE [WEAPON] 
+        If WEAPON=T Then Proc MISSILE[WEAPON] 
     Next 
     For T=3 To 5 
         If WEAPON=T Then Proc ROLLER[WEAPON] 
     Next 
     For T=6 To 7 
-        If WEAPON=T Then Proc NUKE [WEAPON] 
+        If WEAPON=T Then Proc NUKE[WEAPON] 
     Next 
     If WEAPON=8 Then Proc FUNKY BOMB 
     For T-9 To 10 
         If WEAPON=T 
             Wait 8
-            // Sam Play 2
+            Rem Sam Play 2
             Wait 8
-            // Sam Play 2
+            Rem Sam Play 2
             Wait 8 
-            // Sam Play 2
+            Rem Sam Play 2
             Wait 8
-            // Sam Play 2 
-            Proc MIRV [WEAPON] 
+            Rem Sam Play 2 
+            Proc MIRV[WEAPON] 
         End If 
     Next 
     If WEAPON=11 Then Proc DIGGER 
@@ -647,33 +670,33 @@ End Proc
 
 Procedure _FIRE_WEAPON 
     WIND#=WIND/15 
-    V2#=0: T#=0 : J=0 
+    V2#=0 : T#=0 : J=0 
     HORIZONTAL=PLAERS(P,0) 
     VERTICAL=PLAERS(P, 1) 
     HEIGHT=7 
     Do 
         If Key State(69) Then Exit 
-        Ink 15: Plot X,Y: Plot X+1,Y: Plot X-1,Y: Plot X,Y+1: Plot X, Y-1 
+        Ink 15 : Plot X,Y : Plot X+1,Y : Plot X-1,Y : Plot X,Y+1 : Plot X, Y-1 
         WINDT#=WINDT#+0.055 
         XT#=XT#+0.055 
         YT#=YT#+0.055 
         X=(((U#*XT#)+(POWER#/70))+(WIND#*WINDT#*WINDT#))+HORIZONTAL 
         V2#=U2#+A*YT# : Y=((((U2#+V2#)/2+YT#) -HEIGHT)-(POWER2#/98))+VERTICAL 
-        Ink 14: Plot X,Y: Plot X+1,Y: Plot X-1,Y: Plot X, Y+1: Plot X, Y-1 
+        Ink 14 : Plot X,Y : Plot X+1,Y : Plot X-1,Y : Plot X, Y+1 : Plot X, Y-1 
         Wait Vbl 
         If Point(X+1, Y+1)=11 Then HIT=1 : Exit 
         For T=1 To PLAERS 
             If Point(X+1, Y+1)=T Then J=1 : HIT=1 : Exit 
         Next 
-        If Y>200 Then U2#=-(V2#*0.7): YT#=0 : VERTICAL=200: POWER2#=0 : HEIGHT=0 
-        If Y<0 Then U2#=-(V2#*0.7): YT#=0: VERTICAL=0 : POWER2#=0 : HEIGHT=0 
-        If X>640 Then U#=-(Abs(U#+WIND#*WINDT#)) : XT#=0: HORIZONTAL=640 POWER# =0: WINDT#=0 
-        If X<0 Then U#=(Abs(U#+WIND# *WINDT#)) : XT#=0 : HORIZONTAL=1: POWER#=0 : WINDT#=0 
+        If Y>200 Then U2#=-(V2#*0.7): YT#=0 : VERTICAL=200 : POWER2#=0 : HEIGHT=0 
+        If Y<0 Then U2#=-(V2#*0.7): YT#=0 : VERTICAL=0 : POWER2#=0 : HEIGHT=0 
+        If X>640 Then U#=-(Abs(U#+WIND#*WINDT#)) : XT#=0 : HORIZONTAL=640 POWER#=0 : WINDT#=0 
+        If X<0 Then U#=(Abs(U#+WIND# *WINDT#)) : XT#=0 : HORIZONTAL=1 : POWER#=0 : WINDT#=0 
         If J=1 Then Exit 
     Loop 
     If COMPUTER(P)=1 Then COMHITX=X 
     Ink 15 
-    Plot X,Y: Plot X+1,Y: Plot X-1,Y: Plot X, Y+1: Plot X, Y-1 
+    Plot X,Y : Plot X+1,Y : Plot X-1,Y : Plot X, Y+1 : Plot X, Y-1 
 End Proc 
 
 Procedure _CHECK_DEATH 
@@ -687,7 +710,7 @@ Procedure _CHECK_DEATH
         DEAD DEAD*12 
         NRG(T)=NRG(T)-DEAD 
         If NRG(T) <0 Then DEATH(T)=1 
-        If DEAD>0 Then CREDITS(P) =CREDITS(P)+1000 
+        If DEAD>0 Then CREDITS(P)=CREDITS(P)+1000 
     Next 
     DEAD=0 
     For T=1 To PLAERS 
@@ -716,10 +739,10 @@ Procedure FALL
     DEAD=0 
     For T=1 To PLAERS 
         For B=0 To 199 
-            If DEATH(T) = 1 Then Exit 
+            If DEATH(T)=1 Then Exit 
             If Point(PLAERS(T, 0), PLAERS(T, 1)+1)=15 
                 Ink 15 Bar PLAERS(T, 0)-10, PLAERS(T, 1)-5 To PLAERS(T, 0)+10, PLAERS(T, 1)
-                PLAERS(T, 1) = PLAERS(T, 1)+1 
+                PLAERS(T, 1)=PLAERS(T, 1)+1 
                 DEAD=DEAD+1 
                 Ink T : Bar PLAERS(T, 0)-10, PLAERS(T, 1)-5 To PLAERS(T, 0)+10, PLAERS(T, 1)
             End If 
@@ -772,12 +795,12 @@ Procedure COMPUTER
 End Proc 
 
 
-// page 13
+Rem page 13
 Procedure WIN_SCREEN 
     Wait 10 
     Clear Key 
     For T=0 To 9 
-        CREDITS(T) =CREDITS(T)*1.3 
+        CREDITS(T)=CREDITS(T)*1.3 
         LAST(T, 1)=0 
         LAST(T,2)=0 
         LAST(T, 3)=1 
@@ -795,15 +818,15 @@ Procedure WIN_SCREEN
     Locate 0,4 
     For T=1 To PLAERS 
         If DEATH(T)=0 
-            Ink 4: Centre NAMES(T) 
+            Ink 4 : Centre NAME$(T) 
             Locate 0,5 
             Centre "bonus + 5000" 
             Locate 0,7 
             Centre "Cash now stands at" 
             Locate 0,8 
-            CREDITS(T) =CREDITS(T) +5000 
+            CREDITS(T)=CREDITS(T) +5000 
             Centre Str$(CREDITS(T)) 
-            ROUNDSWON(T) =ROUNDSWON(T)+1 
+            ROUNDSWON(T)=ROUNDSWON(T)+1 
         End If 
     Next 
     Wait Key 
@@ -811,7 +834,7 @@ End Proc
 
 Procedure WIN_SCREEN2 
     For T=0 To 10 
-        If Left$(Font$(T), 4) = "mFas" Then Set Font T 
+        If Left$(Font$(T), 4)="mFas" Then Set Font T 
     Next 
     Cls 4 
     Wait 10 
@@ -826,7 +849,7 @@ Procedure WIN_SCREEN2
     For T=1 To PLAERS 
         If MONEY=ROUNDSWON(T) 
             Locate 0,5 
-            Ink 2: Centre NAMES(T) 
+            Ink 2 : Centre NAME$(T) 
             Locate 0,7 : Centre "Rounds Won "+Str$(ROUNDSWON(T)) 
         End If 
     Next 
@@ -835,19 +858,19 @@ Procedure WIN_SCREEN2
     Print "The Players" 
     Locate 10,12 
     For T=1 To PLAERS 
-        Print At(10,11+T); "Player ",T, NAME$(T), "Rounds Won ", ROUNDSWON(T) 
+        Print At(10,11+T);"Player ",T, NAME$(T), "Rounds Won ", ROUNDSWON(T) 
     Next 
     Wait Key 
 End Proc 
 
-Procedure MISSILE [WEAPON] 
+Procedure MISSILE[WEAPON] 
     HT=0 
     If WEAPON=1 Then Goto SKIP 
     WEAPON(WEAPON, P, 0)=WEAPON(WEAPON, P, 0)-1 SKIP: 
     Proc _FIRE_WEAPON 
     If HIT=1 
         Sam Loop Off
-        // Sam Play 4 
+        Rem Sam Play 4 
         If WEAPON=1 
             Ink 15 
             For T=1 To 5 
@@ -865,12 +888,12 @@ Procedure MISSILE [WEAPON]
     End If 
     If WEAPON=1 Then L=5 
     If WEAPON=2 Then L=8 
-    EARTH FALL [Y+L, X+WEAPON+8, X-WEAPON*8] 
+    EARTH FALL[Y+L, X+WEAPON+8, X-WEAPON*8] 
 End Proc 
 
 Procedure ROLLER[WEAPON] 
     HIT=0 
-    WEAPON(WEAPON, P, 0) =WEAPON(WEAPON, P, 0)-1 
+    WEAPON(WEAPON, P, 0)=WEAPON(WEAPON, P, 0)-1 
     Proc _FIRE_WEAPON 
     If Y>200 Then Y=199 
     If X<PLAERS(P,0) Then X=X+3 
@@ -894,15 +917,15 @@ Procedure ROLLER[WEAPON]
         Plot X,Y 
         X=X+1 
         AGAIN: 
-        If Point(X, Y+1)=15 Then Y=Y+1: Goto AGAIN 
-        If Point(X+1,Y) = 11 Then HIT=1: Goto FIN 
+        If Point(X, Y+1)=15 Then Y=Y+1 : Goto AGAIN 
+        If Point(X+1,Y)=11 Then HIT=1 : Goto FIN 
         If X>640 or X<0 Then Exit 
         For T=1 To PLAERS 
-            If Point(X+1,Y) =T Then HIT=1: Goto FIN 
+            If Point(X+1,Y)=T Then HIT=1 : Goto FIN 
         Next 
         Ink 2 
         Plot X,Y 
-        Wait Vbl: Wait Vbl 
+        Wait Vbl : Wait Vbl 
         Next 
     Goto FIN 
     LEFT: 
@@ -911,48 +934,48 @@ Procedure ROLLER[WEAPON]
         Plot X,Y 
         X=X-1 
         AGAIN2: 
-        If Point(X, Y+1)=15 Then Y=Y+1: Goto AGAIN2 
-        If Point(X-1,Y) = 11 Then HIT=1: Goto FIN 
+        If Point(X, Y+1)=15 Then Y=Y+1 : Goto AGAIN2 
+        If Point(X-1,Y)=11 Then HIT=1 : Goto FIN 
         If X>640 or X<0 Then Exit 
         For T=1 To PLAERS 
-            If Point(X-1,Y) =T Then HIT=1: Goto FIN 
+            If Point(X-1,Y)=T Then HIT=1 : Goto FIN 
         Next 
         Ink 2 
         Plot X, Y 
-        Wait Vbl: Wait Vbl 
+        Wait Vbl : Wait Vbl 
     Next 
     FIN: 
     If WEAPON=3 
         Sam Loop Off
-        // Sam Play 4
+        Rem Sam Play 4
         Proc _EXPLOSION[5]
     End If
     If WEAPON=4 
         Sam Loop Off
-        // Sam Play 4
+        Rem Sam Play 4
         Proc _EXPLOSION[10]
     End If
     If WEAPON=5 
         Sam Loop Off
-        // Sam Play 4
+        Rem Sam Play 4
         Proc _EXPLOSION[15]
     End If
 End Proc
 
-Procedure NUKE [WEAPON] 
+Procedure NUKE[WEAPON] 
     HIT=0 
     WEAPON(WEAPON, P, 0)=WEAPON(WEAPON, P, 0)-1 
     Proc _FIRE_WEAPON 
     If HIT=1 
         If WEAPON=6 
             Sam Loop Off
-            // Sam Play 4 
-            Proc _EXPLOSION [10] 
+            Rem Sam Play 4 
+            Proc _EXPLOSION[10] 
         End If 
         If WEAPON=7 
             Sam Loop Off
-            // Sam Play 4 
-            Proc _EXPLOSION [20] 
+            Rem Sam Play 4 
+            Proc _EXPLOSION[20] 
         End If 
     End If 
 End Proc 
@@ -962,8 +985,8 @@ Procedure FUNKY_BOMB
     WEAPON(WEAPON, P, 0)=WEAPON(WEAPON, P, 0)-1 
     Proc _FIRE_WEAPON 
     Sam Loop Off
-    // Sam Play 4 
-    X1=X: Y1=Y 
+    Rem Sam Play 4 
+    X1=X : Y1=Y 
     For BLUBBER=1 To 5 
         HORIZONTAL=X1 
         VERTICAL=Y1 
@@ -976,16 +999,16 @@ Procedure FUNKY_BOMB
             T#=T#+0.055 
             X=(U#*T#)+HORIZONTAL 
             V2#=U2#+A+T# : Y=((U2#+V2#)/2*T#)+VERTICAL 
-            Ink 3: Plot X,Y 
+            Ink 3 : Plot X,Y 
             If Point(X+1, Y+1)=11 Then Exit 
             If T#>4 Then Exit 
         Loop 
         Sam Loop Off
-        // Sam Play 4 
+        Rem Sam Play 4 
         HIT(BLUBBER)=X 
         V#(BLUBBER)=Y 
         Ink 4 
-        For BOMB= 1 To Rnd(10)+10 
+        For BOMB=1 To Rnd(10)+10 
             Circle X, Y, BOMB 
             Circle X+1, Y, BOMB 
         Next 
@@ -1011,12 +1034,12 @@ Procedure FUNKY_BOMB
     VERTICAL-50 
 End Proc 
 
-Procedure MIRV [WEAPON] 
+Procedure MIRV[WEAPON] 
     If WEAPON=9 Then EX=8 
     If WEAPON=10 Then EX=20 
     HIT=0 
     WEAPON(WEAPON, P, 0)=WEAPON(WEAPON, P, 0)-1 
-    X=0 Y=0: T#=0: VNB=0: HEIGHT=8 : WIND#=WIND/15 
+    X=0 Y=0 : T#=0 : VNB=0 : HEIGHT=8 : WIND#=WIND/15 
     For TY=1 To 5 
         HORIZONTAL(TY)=PLAERS(P, 0) 
         VERTICAL(TY)=PLAERS(P, 1) 
@@ -1037,21 +1060,21 @@ Procedure MIRV [WEAPON]
         For E=1 To 5 
         HERE: 
         If E-6 Then Exit 
-        If HIT(E)=1 Then E=E+1: Goto HERE 
+        If HIT(E)=1 Then E=E+1 : Goto HERE 
         Ink 15 
         Plot X(E),Y(E) 
         X(E)=((U#(E) *XT#(E))+(WIND#*WINDT#(E) *WINDT#(E) ) ) + HORIZONTAL(E) 
         V2#(E)=U2#(E) +(A*YT#(E)) : Y(E)=((U2#(E) +V2#(E) )/2*YT#(E) ) +VERTICAL(E)- HEIGHT
         Ink 14 
         Plot X(E),Y(E) 
-        If Point(X(E)+1,Y(E)+1)=11 Then Proc MIRV_HIT [EX] 
+        If Point(X(E)+1,Y(E)+1)=11 Then Proc MIRV_HIT[EX] 
         For T=1 To PLAERS 
             If Point(X(E)+1,Y(E)+1)=T Then Proc MIRV_HIT[EX] 
         Next 
         If Y(E) >200 Then U2#(E)=-(V2#(E) *0.7): YT#(E)=0 : VERTICAL(E)=200 : HEIGHT=0
         If Y(E) <0 Then U2#(E)=-(V2#(E) *0.7): YT#(E)=0 : VERTICAL(E)=0 : HEIGHT=0
-        If X(E)>640 Then U#(E)=-(Abs(U#(E) +WINDT#(E) *WIND#)) : XT#(E)=0: HORIZONTAL(E)=640 : WINDT#(E)=0 
-        If X(E) <0 Then U#(E)=-(Abs(U#(E) +WIND#*WINDT#(E))) : XT#(E)=0: HORIZONTAL(E)=1: WINDT#(E)=0 
+        If X(E)>640 Then U#(E)=-(Abs(U#(E) +WINDT#(E) *WIND#)) : XT#(E)=0 : HORIZONTAL(E)=640 : WINDT#(E)=0 
+        If X(E) <0 Then U#(E)=-(Abs(U#(E) +WIND#*WINDT#(E))) : XT#(E)=0 : HORIZONTAL(E)=1 : WINDT#(E)=0 
         XT#(E)=XT#(E) +0.09499999 
         YT#(E)=YT#(E) +0.09499999 
         WINDT#(E)=WINDT#(E) +0.055 
@@ -1064,10 +1087,10 @@ Procedure MIRV [WEAPON]
     HIT=0 
 End Proc 
 
-Procedure MIRV HIT [SIZE] 
+Procedure MIRV HIT[SIZE] 
     HIT=0 
     Sam Loop Off
-    // Sam Play 4 
+    Rem Sam Play 4 
     Ink 4 
     Plot X(E), Y(E) 
     For T=1 TO SIZE 
@@ -1085,10 +1108,10 @@ End Proc
 
 Procedure DIGGER 
     HIT=0 
-    WEAPON(WEAPON, P, 0) =WEAPON(WEAPON, P, 0)-1 
+    WEAPON(WEAPON, P, 0)=WEAPON(WEAPON, P, 0)-1 
     Proc _FIRE_WEAPON 
     Sam Loop Off
-    // Sam Play 4 
+    Rem Sam Play 4 
     Ink 15 
     For B=0 To 50 
         Y=Y+Rnd(3)-1 
@@ -1104,10 +1127,10 @@ End Proc
 
 Procedure EARTH MOVER 
     HIT=0 
-    WEAPON(WEAPON, P, 0) =WEAPON(WEAPON, P, 0)-1 
+    WEAPON(WEAPON, P, 0)=WEAPON(WEAPON, P, 0)-1 
     Proc _FIRE_WEAPON 
     Sam Loop Off
-    // Sam Play 4 
+    Rem Sam Play 4 
     If HIT=1 
         Ink 9 
         Plot X, Y 
@@ -1121,7 +1144,7 @@ Procedure EARTH MOVER
     End If 
 End Proc 
 
-Procedure _EXPLOSION [SIZE] 
+Procedure _EXPLOSION[SIZE] 
     Ink 15 
     Plot X,Y 
     Ink 3 
@@ -1147,12 +1170,12 @@ End Proc
 
 Procedure LAZY_BOY 
     Limit Mouse 127,0 To 447,400. 
-    Ink 15: Plot X,Y: Plot X+1,Y: Plot X-1,Y: Plot X, Y+1: Plot X, Y-1 
-    Paper 15: Print At(0,0); "Please Select Target" 
+    Ink 15 : Plot X,Y : Plot X+1,Y : Plot X-1,Y : Plot X, Y+1 : Plot X, Y-1 
+    Paper 15 : Print At(0,0);"Please Select Target" 
     Repeat 
         C=X Screen(0,X Mouse) 
         For CURRENT=1 TO PLAERS 
-            If Point(X Screen(X Mouse), Y Screen(Y Mouse)) =CURRENT 
+            If Point(X Screen(X Mouse), Y Screen(Y Mouse))=CURRENT 
                 _COLOUR=CURRENT 
             Exit 
             End If 
@@ -1173,14 +1196,14 @@ Procedure LAZY_BOY
         X=X+1 
         AGAIN: 
         If Point(X, Y+1)=15 Then Y=Y+1 : Goto AGAIN 
-        If Point(X,Y) = 11 Then Y-Y-1: Goto AGAIN 
+        If Point(X,Y)=11 Then Y-Y-1 : Goto AGAIN 
         If X>640 or X<0 Then Exit 
-        If Point(X+1,Y) =_COLOUR Then HIT=1: Goto FIN 
-        If Point(X, Y+1)=_COLOUR Then HIT=1: Goto FIN 
+        If Point(X+1,Y)=_COLOUR Then HIT=1 : Goto FIN 
+        If Point(X, Y+1)=_COLOUR Then HIT=1 : Goto FIN 
         If Point(X, Y-1)=_COLOUR Then HIT=1 : Goto FIN 
         Ink 14 
         Plot X, Y 
-        Wait Vbl: Wait Vbl 
+        Wait Vbl : Wait Vbl 
     Next 
     Goto FIN 
 
@@ -1190,20 +1213,20 @@ Procedure LAZY_BOY
         Plot X, Y 
         X=X-1 
         AGAIN2: 
-        If Point(X,Y+1)=15 Then Y=Y+1: Goto AGAIN2 
-        If Point(X, Y)=11 Then Y-Y-1: Goto AGAIN2 
+        If Point(X,Y+1)=15 Then Y=Y+1 : Goto AGAIN2 
+        If Point(X, Y)=11 Then Y-Y-1 : Goto AGAIN2 
         If X>640 or X<0 Then Exit 
-        If Point(X-1,Y)=_COLOUR Then HIT=1: Goto FIN 
+        If Point(X-1,Y)=_COLOUR Then HIT=1 : Goto FIN 
         If Point(X, Y+1)=_COLOUR Then HIT=1 : Goto FIN 
-        If Point(X, Y-1)=_COLOUR Then HIT=1: Goto FIN 
+        If Point(X, Y-1)=_COLOUR Then HIT=1 : Goto FIN 
         Ink 14 
         Plot X, Y 
-        Wait Vbl: Wait Vbl 
+        Wait Vbl : Wait Vbl 
     Next 
 
     FIN: 
     Sam Loop Off
-    // Sam Play 4 
+    Rem Sam Play 4 
     Ink 15 
     For T=1 To 6 
         Circle X,Y, T 
@@ -1220,7 +1243,7 @@ Procedure WIPE
     Goto FIN 
     1 
     For T=0 To 1500 
-        X=Rnd(31) *20 : Y= Rnd(9)*20 
+        X=Rnd(31) *20 : Y=Rnd(9)*20 
         If Point(X+5, Y+5) <> 0 Then Bar X, Y To X+20,Y+20 
     Next 
     Cls 0 
@@ -1344,10 +1367,10 @@ Procedure WIPE
     BUY=0 
 End Proc
 
-Procedure EARTH_FALL [BOTTOM, RIGHT, LEFT] 
+Procedure EARTH_FALL[BOTTOM, RIGHT, LEFT] 
     Def Scroll 1, LEFT, 0 To RIGHT, BOTTOM,, 1 
     For T=0 To 50 
-        If Point(X, BOTTOM) = 11 Then Exit 
+        If Point(X, BOTTOM)=11 Then Exit 
         Scroll 1 
     Next 
 End Proc 
